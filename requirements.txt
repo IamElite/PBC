@@ -1,6 +1,3 @@
 motor
 python-dotenv
-tgcrypto
-
-https://github.com/IamDvis/pyrogram/archive/dvis.zip
-
+kurigram
