@@ -1,7 +1,8 @@
 aiohttp
 motor
 python-dotenv
-tgcrypto
+#tgcrypto
 kurigram
+
 
 
