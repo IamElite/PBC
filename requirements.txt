@@ -1,4 +1,4 @@
 motor
 python-dotenv
-tgcrypto
+TgCrypto
 kurigram
