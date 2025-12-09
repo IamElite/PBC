@@ -1,0 +1,43 @@
+{
+    "name": "Pixel Baby",
+    "description": "A Telegram AI Chatbot powered by OpenAI, written in Python with Pyrogram.",
+    "keywords": ["python3", "telegram", "bot", "chatbot", "ai", "openai"],
+    "stack": "container",
+    "env": {
+        "API_ID": {
+            "description": "Get this value from https://my.telegram.org/apps",
+            "value": "",
+            "required": true
+        },
+        "API_HASH": {
+            "description": "Get this value from https://my.telegram.org/apps",
+            "value": "",
+            "required": true
+        },
+        "BOT_TOKEN": {
+            "description": "Get a bot token from @BotFather on Telegram",
+            "value": "",
+            "required": true
+        },
+        "MONGO_URL": {
+            "description": "Get a MongoDB connection URL from https://cloud.mongodb.com",
+            "value": "",
+            "required": true
+        },
+        "LOGGER_ID": {
+            "description": "Your log channel/group ID. Add your bot there and promote as admin. Use @userinfobot to get the ID.",
+            "value": "",
+            "required": true
+        },
+        "OWNER_ID": {
+            "description": "Your Telegram user ID. Use @userinfobot to get your ID.",
+            "value": "",
+            "required": true
+        }
+    },
+    "buildpacks": [
+        {
+            "url": "heroku/python"
+        }
+    ]
+}
