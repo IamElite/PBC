@@ -9,5 +9,4 @@ BOT_TOKEN = getenv("BOT_TOKEN", "")
 
 OWNER_ID = int(getenv("OWNER_ID", "0"))
 
-LOGGER_ID = int(getenv("LOGGER_ID", "0"))
 MONGO_URL = getenv("MONGO_URL", "")
