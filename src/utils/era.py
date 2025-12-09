@@ -64,15 +64,24 @@ class era:
                     ) as response:
                         if response.status == 200:
                             reply = await response.text()
-                            if reply:
-                                # Remove quotes if present
-                                reply = reply.strip('"').strip("'")
-                                self.add_message(user_id, chat_id, "assistant", reply)
-                                return reply
+                            if reply and isinstance(reply, str):
+                                # Remove quotes if present and ensure it's not empty
+                                reply = reply.strip('"').strip("'").strip()
+                                if reply:
+                                    self.add_message(user_id, chat_id, "assistant", reply)
+                                    return reply
                         else:
                             print(f"API request failed with status: {response.status}")
+                            # Try to get error details
+                            try:
+                                error_text = await response.text()
+                                print(f"Error response: {error_text}")
+                            except:
+                                pass
             except Exception as e:
                 print(f"API request failed (attempt {attempt + 1}/2): {e}")
+                import traceback
+                print(f"Full traceback: {traceback.format_exc()}")
             if attempt < 1:
                 import time
                 time.sleep(1)
