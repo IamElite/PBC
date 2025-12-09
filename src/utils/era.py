@@ -1,4 +1,5 @@
 import os
+import uuid
 from collections import deque
 import aiohttp
 
@@ -58,18 +59,38 @@ class era:
             try:
                 async with aiohttp.ClientSession() as session:
                     async with session.post(
-                        "https://chatsandbox.com/api/chat",
-                        json={"messages": [full_message], "character": "openai"},
-                        headers={"Content-Type": "application/json"}
+                        "https://paragraph-generator.com/api/aichat/chat",
+                        json={
+                            "UserId": str(uuid.uuid4()),
+                            "Message": full_message,
+                            "ToolName": "_AIChat",
+                            "ConversationId": ""
+                        },
+                        headers={
+                            "Content-Type": "application/json",
+                            "X-Requested-With": "XMLHttpRequest"
+                        }
                     ) as response:
                         if response.status == 200:
-                            reply = await response.text()
-                            if reply and isinstance(reply, str):
-                                # Remove quotes if present and ensure it's not empty
-                                reply = reply.strip('"').strip("'").strip()
-                                if reply:
-                                    self.add_message(user_id, chat_id, "assistant", reply)
-                                    return reply
+                            try:
+                                data = await response.json()
+                                if data.get('succeeded') and data.get('data', {}).get('response'):
+                                    reply = data['data']['response']
+                                    if reply and isinstance(reply, str):
+                                        # Clean the reply
+                                        reply = reply.strip('"').strip("'").strip()
+                                        if reply:
+                                            self.add_message(user_id, chat_id, "assistant", reply)
+                                            return reply
+                            except Exception as json_error:
+                                print(f"JSON parsing error: {json_error}")
+                                # Fallback to text response
+                                reply = await response.text()
+                                if reply and isinstance(reply, str):
+                                    reply = reply.strip('"').strip("'").strip()
+                                    if reply:
+                                        self.add_message(user_id, chat_id, "assistant", reply)
+                                        return reply
                         else:
                             print(f"API request failed with status: {response.status}")
                             # Try to get error details
