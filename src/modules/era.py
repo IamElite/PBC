@@ -51,7 +51,12 @@ async def mention_chatbot(_, message: Message):
     else:
         reply = await to_thread(chatbot_api.ask_question, user_id, chat_id, question, user_name, False)
 
-    if not reply:
+    if not reply or not isinstance(reply, str) or not reply.strip():
         await message.reply_text(f"⚠️ {app.name} is currently unavailable. Please try again later.")
     else:
-        await message.reply_text(reply)
+        # Clean the reply to ensure it's valid for Telegram
+        clean_reply = reply.strip()
+        if clean_reply:
+            await message.reply_text(clean_reply)
+        else:
+            await message.reply_text(f"⚠️ {app.name} is currently unavailable. Please try again later.")
