@@ -24,11 +24,6 @@
             "value": "",
             "required": true
         },
-        "LOGGER_ID": {
-            "description": "Your log channel/group ID. Add your bot there and promote as admin. Use @userinfobot to get the ID.",
-            "value": "",
-            "required": true
-        },
         "OWNER_ID": {
             "description": "Your Telegram user ID. Use @userinfobot to get your ID.",
             "value": "",
