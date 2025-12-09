@@ -50,7 +50,7 @@ class era:
             if chat["role"] == "user":
                 full_message += f"\n\nUser: {chat['content']}"
             elif chat["role"] == "assistant":
-                full_message += f"\n\nAssistant: {chat['content']}"
+                full_message += f"\n\n{chat['content']}"
         
         # Add current message
         full_message += f"\n\nUser: {message}"
