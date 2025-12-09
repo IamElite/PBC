@@ -35,7 +35,7 @@ class Bot(pyrogram.Client):
             max_concurrent_transmissions=7,
         )
         self.owner = config.OWNER_ID
-        self.logger = config.LOGGER_ID
+        self.logger = config.OWNER_ID
 
     async def start(self):
         await super().start()
