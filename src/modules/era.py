@@ -47,9 +47,9 @@ async def mention_chatbot(_, message: Message):
     )
 
     if any(word in question for word in triggered_words):
-        reply = await to_thread(chatbot_api.ask_question, user_id, chat_id, question, user_name, True)
+        reply = await chatbot_api.ask_question(user_id, chat_id, question, user_name, True)
     else:
-        reply = await to_thread(chatbot_api.ask_question, user_id, chat_id, question, user_name, False)
+        reply = await chatbot_api.ask_question(user_id, chat_id, question, user_name, False)
 
     if not reply or not isinstance(reply, str) or not reply.strip():
         await message.reply_text(f"⚠️ {app.name} is currently unavailable. Please try again later.")
