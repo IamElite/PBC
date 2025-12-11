@@ -1,8 +1,10 @@
 aiohttp
+requests
 motor
 python-dotenv
 #tgcrypto
 kurigram
+
 
 
 
