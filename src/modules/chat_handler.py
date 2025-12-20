@@ -10,7 +10,7 @@ from src.utils.era import chatbot_api
 
 @app.on_message(filters.text & ~filters.bot & ~filters.command(["start", "ping", "broadcast"]))
 async def handle_chat(client: Client, message: Message):
-    """Main chat handler using AI API with dynamic prompt system"""
+    """Main chat handler for all messages (era.py handles group mentions)"""
     
     try:
         # Add user to database if not exists
@@ -20,18 +20,41 @@ async def handle_chat(client: Client, message: Message):
         # Get message text
         user_message = message.text or message.caption or ""
         
-        # Check if message mentions the bot
-        bot_username = f"@{client.me.username}" if client.me else None
-        is_mentioned = bot_username and bot_username in user_message
-        
         # Check if this is a group chat
         is_group = message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]
         
-        # In groups, only respond if mentioned or with some probability
-        if is_group and not is_mentioned:
-            # Small chance to respond naturally in groups (5%)
-            if random.random() > 0.05:
-                return
+        # Get AI response using our new dynamic system
+        user_name = message.from_user.first_name if message.from_user else None
+        
+        # Call AI API for all messages (era.py handles mentions)
+        ai_response = await chatbot_api.ask_question(
+            user_id=message.from_user.id if message.from_user else 0,
+            chat_id=message.chat.id,
+            message=user_message,
+            user_name=user_name,
+            is_group=is_group
+        )
+        
+        # Handle special cases if AI fails or needs override
+        if not ai_response:
+            if "who are you" in user_message.lower() or "tum kaun ho" in user_message.lower():
+                ai_response = prompt_builder.prompts['persona']['identity']['introduction']
+            elif any(correction in user_message.lower() for correction in ["bhai nhi", "yaar nhi", "be nhi"]):
+                apology_responses = ["maaf kijiye! aap kaise hain? 😊", "sorry! respect karungi 💕", "got it! aapke liye ✨"]
+                ai_response = random.choice(apology_responses)
+            else:
+                ai_response = "tech issue... sorry 😊"
+        
+        # Send the response
+        await message.reply_text(
+            ai_response,
+            reply_to_message_id=message.id if not is_group else None
+        )
+        
+    except Exception as e:
+        print(f"Error in chat handler: {e}")
+        # Fallback response
+        await message.reply_text("tech issue... sorry 😊")
         
         # 🤖 CALL AI API WITH DYNAMIC PROMPT!
         user_name = message.from_user.first_name if message.from_user else None
