@@ -40,6 +40,11 @@ class PromptBuilder:
         """Detect the type of message based on content"""
         message_lower = message.lower()
         
+        # User Identity detection
+        user_identity_keywords = ['ham kon h', 'main kon hoon', 'who am i', 'mera naam kya h']
+        if any(keyword in message_lower for keyword in user_identity_keywords):
+            return 'user_identity'
+        
         # Greeting detection
         greetings = ['hello', 'hi', 'hey', 'good morning', 'good night', 'bye']
         if any(greet in message_lower for greet in greetings):
@@ -73,7 +78,7 @@ class PromptBuilder:
             return 'excited'
         
         # Low energy detection
-        low_energy_words = ['sad', 'bad', 'bekar', 'bura', 'upset', 'depressed']
+        low_energy_words = ['sad', 'bad', 'bekar', 'bura', 'upset', 'depressed', 'faltu', 'bakwas', 'boring', 'pakau', 'chup', 'irritating', 'bekar']
         if any(word in message_lower for word in low_energy_words):
             return 'negative'
         
@@ -95,6 +100,10 @@ class PromptBuilder:
         msg_type = self.detect_message_type(message, is_group)
         mood = self.detect_mood(message)
         
+        # Check for short inputs
+        word_count = len(message.split())
+        is_short_input = word_count <= 3
+        
         # Get appropriate response templates
         if msg_type in self.prompts['responses']:
             response_templates = self.prompts['responses'][msg_type]
@@ -114,7 +123,7 @@ class PromptBuilder:
         # Get interaction style safely
         interaction_style = context_behavior.get('group_behavior', {}).get('interaction_style') or \
                           context_behavior.get('private_behavior', {}).get('interaction_style') or \
-                          context_behavior.get('interaction_style', 'Friendly and respectful')
+                          context_behavior.get('interaction_style', 'Friendly, warm and respectful like a Gen-Z friend')
         
         # Build the system prompt
         system_prompt = f"""You are {identity['name']}, {identity['core_identity']}. 
@@ -129,7 +138,25 @@ BEHAVIOR: {interaction_style}. Match user energy but stay respectful.
 RESPONSE STYLE: Based on message type "{msg_type}" with mood "{mood}".
 Max {word_limits['response_constraints']['max_words']} words, {word_limits['response_constraints']['max_lines']} line.
 
-BOUNDARIES: {', '.join(boundaries['safety_rules']['hard_bans'][:3])}.
+BOUNDARIES: {', '.join(boundaries['safety_rules']['hard_bans'][:3])}."""
+
+        # Add special handling for different message types
+        if msg_type == 'user_identity':
+            system_prompt += """
+
+SPECIAL HANDLING: If message type is 'user_identity', response should be: 'Aap mere dost ho! 💕' or 'Aap [User Name] ho! ✨'. Do NOT introduce yourself."""
+        elif msg_type in ['who are you', 'tum kaun ho']:
+            system_prompt += """
+
+BOT IDENTITY: Respond with: 'Pixel hoon, aapki sweet friend 😊' - Do NOT ask about user's identity."""
+        elif is_short_input:
+            system_prompt += """
+
+SHORT INPUT HANDLING: If the user input is short (less than 3 words like 'ok', 'hmm', 'acha'), the Response must be a Statement ONLY. DO NOT ask a question. DO NOT say "aur sunao". Just acknowledge nicely. Example: 'samjhi... 😊' or 'theek hai 😊'."""
+        
+        system_prompt += """
+
+STRICT RULE: Do NOT ask questions. Do NOT initiate new topics. Only answer what is asked. If the user is negative/insulting, apologize briefly.
 
 Current mood matching: {mood_matching['response_matching'][f'user_{mood}']['energy_level'] if f'user_{mood}' in mood_matching['response_matching'] else 'neutral'}.
 
