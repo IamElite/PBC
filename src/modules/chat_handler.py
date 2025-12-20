@@ -10,7 +10,7 @@ from src.utils.era import chatbot_api
 
 @app.on_message(filters.text & ~filters.bot & ~filters.command(["start", "ping", "broadcast"]))
 async def handle_chat(client: Client, message: Message):
-    """Main chat handler - only for private chats or bot mentions in groups"""
+    """Main chat handler - ONLY for private chats (no groups)"""
     
     try:
         # Add user to database if not exists
@@ -20,14 +20,13 @@ async def handle_chat(client: Client, message: Message):
         # Get message text
         user_message = message.text or message.caption or ""
         
-        # Check if this is a group chat
+        # Check if this is a group chat - IGNORE ALL GROUP MESSAGES
         is_group = message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]
-        
-        # In group chats, only respond if bot is mentioned
         if is_group:
-            bot_username = f"@{client.me.username}" if client.me else None
-            if not (bot_username and bot_username in user_message):
-                return  # Don't respond in groups without mention
+            return  # Don't respond to ANY group messages here
+        
+        # This handler is ONLY for private chats
+        # Group chats are handled by era.py (mentions only)
         
         # Check if message contains other bot commands (ignore them)
         other_bot_commands = [
@@ -45,13 +44,12 @@ async def handle_chat(client: Client, message: Message):
         
         for command in other_bot_commands:
             if command in message_lower:
-                # Check if it's specifically for another bot (contains @username but not our bot)
+                # In private chats, still ignore other bot commands
                 if '@' in user_message:
                     bot_username = f"@{client.me.username}" if client.me else None
                     if bot_username and bot_username not in user_message:
                         is_other_bot_command = True
                         break
-                # If no @username, still treat as potential other bot command if it starts with /
                 elif message_lower.strip().startswith(command):
                     is_other_bot_command = True
                     break
@@ -62,13 +60,13 @@ async def handle_chat(client: Client, message: Message):
         # Get AI response using our dynamic system
         user_name = message.from_user.first_name if message.from_user else None
         
-        # Call AI API for messages that should be handled
+        # Call AI API for private chat messages
         ai_response = await chatbot_api.ask_question(
             user_id=message.from_user.id if message.from_user else 0,
             chat_id=message.chat.id,
             message=user_message,
             user_name=user_name,
-            is_group=is_group
+            is_group=False  # Always private chat
         )
         
         # Handle special cases if AI fails or needs override
@@ -81,11 +79,11 @@ async def handle_chat(client: Client, message: Message):
             else:
                 ai_response = "Nahi pata... par main try karti hoon! 😊"
         
-        # Send the response
+        # Send the response (always reply in private chats)
         if ai_response and ai_response.strip():
             await message.reply_text(
                 ai_response,
-                reply_to_message_id=message.id if not is_group else None
+                reply_to_message_id=message.id
             )
         
     except Exception as e:
@@ -96,19 +94,16 @@ async def handle_chat(client: Client, message: Message):
 
 @app.on_message(filters.photo | filters.video | filters.document)
 async def handle_media(client: Client, message: Message):
-    """Handle media messages with simple responses"""
+    """Handle media messages - ONLY for private chats"""
     
     try:
         is_group = message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]
         
-        # Only respond in groups if mentioned or randomly
+        # Only respond in private chats (no groups)
         if is_group:
-            bot_username = f"@{client.me.username}" if client.me else None
-            if not (bot_username and bot_username in (message.caption or "")):
-                if random.random() > 0.03:  # 3% chance
-                    return
+            return
         
-        # Simple media responses
+        # Simple media responses for private chats only
         media_responses = [
             "nice! interesting media 😊",
             "cool content! share more 💕",
@@ -121,7 +116,7 @@ async def handle_media(client: Client, message: Message):
         
         await message.reply_text(
             response,
-            reply_to_message_id=message.id if not is_group else None
+            reply_to_message_id=message.id
         )
         
     except Exception as e:
@@ -130,17 +125,16 @@ async def handle_media(client: Client, message: Message):
 
 @app.on_message(filters.sticker)
 async def handle_sticker(client: Client, message: Message):
-    """Handle sticker messages"""
+    """Handle sticker messages - ONLY for private chats"""
     
     try:
         is_group = message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]
         
-        # Only respond in groups if mentioned or randomly
+        # Only respond in private chats (no groups)
         if is_group:
-            if random.random() > 0.04:  # 4% chance
-                return
+            return
         
-        # Simple sticker responses
+        # Simple sticker responses for private chats only
         sticker_responses = [
             "haha! cute sticker 😊",
             "nice choice! 💕",
@@ -153,7 +147,7 @@ async def handle_sticker(client: Client, message: Message):
         
         await message.reply_text(
             response,
-            reply_to_message_id=message.id if not is_group else None
+            reply_to_message_id=message.id
         )
         
     except Exception as e:
