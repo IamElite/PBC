@@ -23,10 +23,10 @@ async def handle_chat(client: Client, message: Message):
         # Check if this is a group chat
         is_group = message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]
         
-        # Get AI response using our new dynamic system
+        # Get AI response using our dynamic system
         user_name = message.from_user.first_name if message.from_user else None
         
-        # Call AI API for all messages (era.py handles mentions)
+        # Call AI API for all messages
         ai_response = await chatbot_api.ask_question(
             user_id=message.from_user.id if message.from_user else 0,
             chat_id=message.chat.id,
@@ -43,51 +43,20 @@ async def handle_chat(client: Client, message: Message):
                 apology_responses = ["maaf kijiye! aap kaise hain? 😊", "sorry! respect karungi 💕", "got it! aapke liye ✨"]
                 ai_response = random.choice(apology_responses)
             else:
-                ai_response = "tech issue... sorry 😊"
+                ai_response = "Nahi pata... par main try karti hoon! 😊"
         
         # Send the response
-        await message.reply_text(
-            ai_response,
-            reply_to_message_id=message.id if not is_group else None
-        )
+        if ai_response and ai_response.strip():
+            await message.reply_text(
+                ai_response,
+                reply_to_message_id=message.id if not is_group else None
+            )
         
     except Exception as e:
         print(f"Error in chat handler: {e}")
-        # Fallback response
-        await message.reply_text("tech issue... sorry 😊")
-        
-        # 🤖 CALL AI API WITH DYNAMIC PROMPT!
-        user_name = message.from_user.first_name if message.from_user else None
-        
-        # Get AI response using our new dynamic system
-        ai_response = await chatbot_api.ask_question(
-            user_id=message.from_user.id if message.from_user else 0,
-            chat_id=message.chat.id,
-            message=user_message,
-            user_name=user_name,
-            is_group=is_group
-        )
-        
-        # Handle special cases if AI fails or needs override
-        if not ai_response:
-            if "who are you" in user_message.lower() or "tum kaun ho" in user_message.lower():
-                ai_response = prompt_builder.prompts['persona']['identity']['introduction']
-            elif any(correction in user_message.lower() for correction in ["bhai nhi", "yaar nhi", "be nhi"]):
-                apology_responses = ["maaf kijiye! aap kaise hain? 😊", "sorry! respect karungi 💕", "got it! aapke liye ✨"]
-                ai_response = random.choice(apology_responses)
-            else:
-                ai_response = "tech issue... sorry 😊"
-        
-        # Send the response
-        await message.reply_text(
-            ai_response,
-            reply_to_message_id=message.id if not is_group else None
-        )
-        
-    except Exception as e:
-        print(f"Error in chat handler: {e}")
-        # Fallback response
-        await message.reply_text("tech issue... sorry 😊")
+        # Fallback response for any errors
+        fallback_response = "sorry... technical issue! bas ek minute 😊"
+        await message.reply_text(fallback_response)
 
 @app.on_message(filters.photo | filters.video | filters.document)
 async def handle_media(client: Client, message: Message):
