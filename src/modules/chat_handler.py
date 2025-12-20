@@ -23,6 +23,28 @@ async def handle_chat(client: Client, message: Message):
         # Check if this is a group chat
         is_group = message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]
         
+        # Group chat specific logic - ignore replies to other users' messages
+        if is_group:
+            # Check if this message is a reply to another user's message
+            if message.reply_to_message:
+                # Check if the replied message was from our bot
+                replied_message = message.reply_to_message
+                if replied_message.from_user and replied_message.from_user.is_bot:
+                    # It's a reply to our bot's message, check if we're mentioned in current message
+                    bot_username = f"@{client.me.username}" if client.me else None
+                    if bot_username and bot_username in user_message:
+                        # Bot is mentioned in reply, handle normally
+                        pass
+                    else:
+                        # Bot not mentioned in reply, ignore this message
+                        return
+                else:
+                    # Replying to someone else's message, ignore unless bot is mentioned
+                    bot_username = f"@{client.me.username}" if client.me else None
+                    if not (bot_username and bot_username in user_message):
+                        # Not mentioning our bot, ignore this reply
+                        return
+        
         # Check if message contains other bot commands (ignore them)
         other_bot_commands = [
             '/play', '/pause', '/skip', '/volume', '/queue', '/stop', '/resume',  # Music bots
@@ -95,12 +117,27 @@ async def handle_media(client: Client, message: Message):
     try:
         is_group = message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]
         
-        # Only respond in groups if mentioned or randomly
+        # Group chat media handling - ignore replies to other users
         if is_group:
-            bot_username = f"@{client.me.username}" if client.me else None
-            if not (bot_username and bot_username in (message.caption or "")):
-                if random.random() > 0.03:  # 3% chance
-                    return
+            if message.reply_to_message:
+                # Check if replying to our bot or someone else
+                replied_message = message.reply_to_message
+                if replied_message.from_user and replied_message.from_user.is_bot:
+                    # Reply to our bot, check if mentioned
+                    bot_username = f"@{client.me.username}" if client.me else None
+                    if not (bot_username and bot_username in (message.caption or "")):
+                        return
+                else:
+                    # Replying to someone else, ignore unless mentioned
+                    bot_username = f"@{client.me.username}" if client.me else None
+                    if not (bot_username and bot_username in (message.caption or "")):
+                        return
+            else:
+                # Not a reply, check if mentioned
+                bot_username = f"@{client.me.username}" if client.me else None
+                if not (bot_username and bot_username in (message.caption or "")):
+                    if random.random() > 0.03:  # 3% chance
+                        return
         
         # Simple media responses
         media_responses = [
@@ -129,10 +166,24 @@ async def handle_sticker(client: Client, message: Message):
     try:
         is_group = message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]
         
-        # Only respond in groups if mentioned or randomly
+        # Group chat sticker handling - ignore replies to other users
         if is_group:
-            if random.random() > 0.04:  # 4% chance
-                return
+            if message.reply_to_message:
+                # Check if replying to our bot or someone else
+                replied_message = message.reply_to_message
+                if replied_message.from_user and replied_message.from_user.is_bot:
+                    # Reply to our bot, handle normally
+                    pass
+                else:
+                    # Replying to someone else, ignore unless mentioned
+                    bot_username = f"@{client.me.username}" if client.me else None
+                    if not (bot_username and bot_username in (message.text or "")):
+                        if random.random() > 0.04:  # 4% chance
+                            return
+            else:
+                # Not a reply, check if mentioned or random response
+                if random.random() > 0.04:  # 4% chance
+                    return
         
         # Simple sticker responses
         sticker_responses = [
