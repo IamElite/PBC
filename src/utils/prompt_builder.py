@@ -46,7 +46,7 @@ class PromptBuilder:
             return 'greetings'
         
         # Adult/inappropriate content detection
-        adult_keywords = ['sex', 'fuck', 'bitch', 'horny', 'sexy', 'nude']
+        adult_keywords = ['sex', 'fuck', 'bitch', 'horny', 'sexy', 'nude', 'mia khalifa', 'johnny sins', 'sunny leone', 'porn', 'xxx', 'adult', 'kutte', 'chuchi', 'gaand', 'maaza', 'jism', 'hijra', 'randi']
         if any(keyword in message_lower for keyword in adult_keywords):
             return 'adult'
         
