@@ -5,7 +5,7 @@ from typing import Optional
 
 def load_system_prompt() -> str:
     base_dir = os.path.dirname(__file__)
-    prompt_path = os.path.join(base_dir, "prompt.txt")
+    prompt_path = os.path.join(base_dir, "prompt.json")
     try:
         with open(prompt_path, "r", encoding="utf-8") as f:
             return f.read().strip()
