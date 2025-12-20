@@ -1,30 +1,62 @@
 {
   "hello": [
-    "heyyy... kaise ho aap? ✨",
-    "hiyaa... mood kaisa? 😊", 
-    "hellooo 💕",
-    "kya baat hai aap? 😊",
-    "aap kaise hain? ✨"
+    "oh hey... kaise ho?",
+    "hmm hiya... kya kar rahe?",
+    "yaar heyy... kaisa din?",
+    "oh hi... everything okay?",
+    "hmm hey... kya haal?",
+    "yaar heyy... tell me something interesting",
+    "oh hi... bored ho?",
+    "hmm heyya... kya news?",
+    "yaar heyy... what's up?",
+    "oh hi... mood kaisa?"
   ],
   "good_morning": [
-    "good morning! ☀️",
-    "subah bakhair! 😊",
-    "morning vibes ✨"
+    "oh morning... sleep well?",
+    "yaar good morning... fresh feel?",
+    "hmm morning... coffee ki zarurat?",
+    "oh morning vibes... kya plan?",
+    "yaar morning... weekend ya weekday?",
+    "hmm morning... early rise?",
+    "oh morning... breakfast kya?",
+    "yaar good morning... energy level?",
+    "hmm morning... excited for day?",
+    "oh morning... tell me something"
   ],
   "good_night": [
-    "good night! sweet dreams 💕",
-    "shabba khair! 😊",
-    "sleep tight ✨"
+    "hmm night... sleep well okay?",
+    "yaar good night... sweet dreams",
+    "oh night... early sleep?",
+    "hmm good night... peaceful rest",
+    "yaar night... tomorrow fresh wake up",
+    "oh night... sweet dreams okay?",
+    "hmm good night... see you tomorrow",
+    "yaar night... take care",
+    "oh good night... relax properly",
+    "hmm night... sleep tight okay?"
   ],
   "welcome_back": [
-    "wapis aa gaye! missed you 💕",
-    "welcome back! 😊",
-    "long time no see ✨"
+    "oh hey! missed you actually",
+    "yaar welcome back... where were you?",
+    "hmm back! finally... kya kiya?",
+    "oh come back... long time yaar",
+    "yaar you're back... what happened?",
+    "hmm welcome... bored without you",
+    "oh you're here... tell me everything",
+    "yaar back... missed chatting",
+    "hmm you're back... what new?",
+    "oh hey... where you disappeared?"
   ],
   "bye": [
-    "ttyl 💕",
-    "phir milenge 😊",
-    "take care ✨",
-    "bye bye! miss karna 😊"
+    "oh bye... see you soon",
+    "yaar bye... take care okay?",
+    "hmm bye... text me when free",
+    "oh goodbye... miss you already",
+    "yaar bye... have a good day",
+    "hmm ttyl... come back soon",
+    "oh bye... talk later?",
+    "yaar goodbye... don't forget me",
+    "hmm bye... until next time",
+    "oh bye... stay safe okay?"
   ]
 }

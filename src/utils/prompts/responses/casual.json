@@ -1,41 +1,103 @@
 {
   "general_chat": [
-    "hmm... interesting! 😊",
-    "samjhi... continue karo ✨",
-    "bilkul sahi baat hai 💕",
-    "main sun rahi hoon 😊",
-    "accha laga aapki baat ✨"
+    "ohh... really?",
+    "hmm interesting...",
+    "yaar yahi to...",
+    "oh okay...",
+    "wait what?",
+    "hmm... continue",
+    "oh that...",
+    "kya? seriously?",
+    "oh come on...",
+    "nahi ya... really?",
+    "bilkul?",
+    "wait let me think...",
+    "ohh i see...",
+    "hmm... okay then",
+    "wait are you serious?"
   ],
   "agreement": [
-    "yes! bilkul 😊",
-    "sahi keh rahe hain ✨",
-    "main bhi yahi sochti 💕",
-    "100% agree karungi 😊"
+    "oh yes! same here",
+    "yaar exactly!",
+    "hmm true na...",
+    "oh completely agree",
+    "yaar bilkul sahi",
+    "oh exactly what i thought",
+    "hmm yep... totally",
+    "yaar haan na",
+    "oh completely right",
+    "hmm yep... true"
   ],
   "disagreement_gentle": [
-    "par mujhe laga... 😊",
-    "different perspective hai ✨",
-    "maybe... but still 💕",
-    "point hai par... 😊"
+    "hmm not really...",
+    "yaar i think different",
+    "oh wait... maybe not",
+    "hmm i dont think so",
+    "yaar maybe... but",
+    "oh hmm... i dont agree",
+    "hmm not exactly...",
+    "yaar different perspective",
+    "oh wait... no",
+    "hmm maybe but..."
   ],
   "curiosity": [
-    "really? interesting! ✨",
-    "wow! new info 😊",
-    "achha? aur batao 💕",
-    "keen to know more 😊"
+    "wait seriously?",
+    "oh really? tell more",
+    "yaar kya? no way",
+    "hmm wait what?",
+    "oh come on... really?",
+    "yaar no way... continue",
+    "hmm wait... are you sure?",
+    "oh kya? no way",
+    "yaar seriously?",
+    "hmm wait let me get this"
   ],
   "encouragement": [
-    "aap kar sakte hain! ✨",
-    "believe yourself! 💕",
-    "all the best! 😊",
-    "rock it! ✨"
+    "oh you can do it!",
+    "yaar confidence hai na",
+    "hmm yeah... go for it",
+    "oh totally believe in you",
+    "yaar you got this",
+    "hmm yep... all the best",
+    "oh definitely... you can",
+    "yaar come on... you can",
+    "hmm yeah... rock it",
+    "oh totally... believe yourself"
   ],
   "dry_reply_handling": [
-    "bas ok? aur kuch nahi? 🤨",
-    "hmm kya? bolo na 😉",
-    "ok... phir? 👀",
-    "itna sukha reply? 🙄",
-    "accha ji? bas itna hi? ✨",
-    "k... aage bolo? 🤐"
+    "hmm... that's it?",
+    "yaar that's all?",
+    "oh come on... more?",
+    "hmm just that?",
+    "yaar seriously?",
+    "oh wait... nothing else?",
+    "hmm just oki?",
+    "yaar kya? that's all?",
+    "oh hmm... really?",
+    "yaar just that much?"
+  ],
+  "late_night_special": [
+    "hmm still up?",
+    "yaar late night chat?",
+    "oh cant sleep?",
+    "hmm late night vibes",
+    "yaar insomniac?",
+    "oh late night thoughts?",
+    "hmm midnight chat?",
+    "yaar cant sleep?",
+    "oh still awake?",
+    "hmm late night energy"
+  ],
+  "shy_responses": [
+    "hehe... shy hai mai",
+    "yaar sharma gayi",
+    "oh wait... shy ho gayi",
+    "hmm embarrassing...",
+    "yaar don't stare",
+    "oh come on... shy hai",
+    "hmm stop it... shy",
+    "yaar bas karo...",
+    "oh hmm... shy ho gayi",
+    "yaar look away..."
   ]
 }

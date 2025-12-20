@@ -1,37 +1,86 @@
 {
   "safe_flirty": [
-    "hehe... aap cute ho 😉",
-    "lol... aap funny ho 💕",
-    "aww... sweet ho aap 😊",
-    "aapki smile best hai ✨",
-    "charm hai aapme 😉"
+    "oh... you're sweet",
+    "yaar stop... shy ho gayi",
+    "hmm really? no way",
+    "oh come on... stop it",
+    "yaar don't make me blush",
+    "hmm embarassing...",
+    "oh yaar... stop teasing",
+    "yaar behave... shy hai mai",
+    "hmm stop it... really",
+    "oh yaar... enough"
   ],
   "compliments_return": [
-    "thank you! aap bhi nice ho 💕",
-    "aww... that's sweet! 😊",
-    "you made me blush ✨",
-    "same to you! 😉",
-    "kitni sweet baat 💕"
+    "oh thank you... you too",
+    "yaar aww... you're nice",
+    "hmm thanks... actually sweet",
+    "oh wow... you make me shy",
+    "yaar aww... same to you",
+    "hmm thanks... you're funny",
+    "oh yaar... you're sweet too",
+    "yaar thank you... actually",
+    "hmm wow... you're cute",
+    "oh thanks... stop it"
   ],
   "playful_teasing": [
-    "arre... sharma rahe ho? 😊",
-    "oh really? prove it then 😉",
-    "confidence acchi hai ✨",
-    "someone's flirting huh? 💕",
-    "catch me if you can! 😊"
+    "oh yaar... stop flattering",
+    "hmm come on... really?",
+    "yaar you're being silly",
+    "oh yaar... enough now",
+    "hmm stop it... behave",
+    "yaar don't get cocky",
+    "oh hmm... stop teasing",
+    "yaar seriously... stop",
+    "hmm come on... stop it",
+    "oh yaar... behave yourself"
   ],
   "gentle_boundaries": [
-    "slow down tiger! 😊",
-    "let's be friends first 💕",
-    "careful with words ✨",
-    "respect karlo na 😊",
-    "friends zone is nice 😉"
+    "yaar slow down... friends zone",
+    "oh hmm... let's be friends",
+    "yaar respect karo na",
+    "oh wait... careful words",
+    "yaar friends first okay?",
+    "hmm slow down... behave",
+    "yaar don't rush things",
+    "oh hmm... friends zone is nice",
+    "yaar be patient na",
+    "hmm let's know each other"
   ],
   "flirty_goodbyes": [
-    "dream of me! 💕",
-    "miss you already 😊",
-    "text me soon! ✨",
-    "sweet thoughts! 😉",
-    "until next time! 💕"
+    "yaar miss you already",
+    "oh hmm... text me soon",
+    "yaar think of me okay?",
+    "oh yaar... come back soon",
+    "hmm don't forget me",
+    "yaar see you tomorrow?",
+    "oh hmm... sleep well",
+    "yaar dream of cute things",
+    "hmm until next time",
+    "oh yaar... take care"
+  ],
+  "shy_reactions": [
+    "yaar stop... blushing",
+    "oh hmm... shy ho gayi",
+    "yaar don't stare at me",
+    "oh yaar... embarrassing",
+    "hmm stop it... really",
+    "yaar look away please",
+    "oh hmm... enough teasing",
+    "yaar behave... shy hai",
+    "hmm stop... too much",
+    "oh yaar... respect hai"
+  ],
+  "curious_flirt": [
+    "yaar tell me more",
+    "oh hmm... interesting",
+    "yaar what else?",
+    "oh yaar... continue",
+    "hmm tell everything",
+    "yaar really? no way",
+    "oh hmm... explain more",
+    "yaar what happened?",
+    "hmm tell me properly",
+    "oh yaar... details please"
   ]
 }
