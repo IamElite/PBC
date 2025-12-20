@@ -37,7 +37,7 @@ def chatbot_filter_func(_, __, m: Message):
 
 chatbot_filter = filters.create(chatbot_filter_func)
 
-@app.on_message(filters.text & filters.group & chatbot_filter)
+@app.on_message(filters.text & chatbot_filter)
 async def mention_chatbot(_, message: Message):
     # Check if bot is actually mentioned in the message
     bot_username = f"@{app.me.username}" if app.me else None
