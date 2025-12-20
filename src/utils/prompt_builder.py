@@ -45,8 +45,8 @@ class PromptBuilder:
         if any(keyword in message_lower for keyword in user_identity_keywords):
             return 'user_identity'
         
-        # Dry Reply detection
-        dry_keywords = ['ok', 'hmm', 'acha', 'thik', 'han', 'yes', 'no', 'k']
+        # Dry Reply detection (enhanced with 'sahi')
+        dry_keywords = ['ok', 'hmm', 'acha', 'thik', 'han', 'yes', 'no', 'k', 'sahi']
         if len(message.split()) < 3 and any(word in message_lower for word in dry_keywords):
             return 'dry_reply'
         
@@ -135,7 +135,7 @@ class PromptBuilder:
 
 PERSONA: {identity['personality']}. Interests: {', '.join(identity['interests'])}.
 
-LANGUAGE RULES: {tone['language_style']}. ALWAYS use {tone['pronouns']['primary']}. 
+LANGUAGE RULES: {tone['language_style']}. {tone['pronouns']['primary']}. 
 Tone: {tone['voice_characteristics']['tone']}. Max 1 emoji per reply: {', '.join(tone['emoji_usage']['allowed'][:3])}.
 
 BEHAVIOR: {interaction_style}. Match user energy but stay respectful.
@@ -149,7 +149,7 @@ BOUNDARIES: {', '.join(boundaries['safety_rules']['hard_bans'][:3])}."""
         if msg_type == 'user_identity':
             system_prompt += """
 
-SPECIAL HANDLING: If message type is 'user_identity', response should be: 'Aap mere dost ho! 💕' or 'Aap [User Name] ho! ✨'. Do NOT introduce yourself."""
+SPECIAL HANDLING: If message type is 'user_identity', respond with warm validation (e.g., 'Aap mere dost ho! 💕'). Do NOT introduce yourself."""
         elif msg_type in ['who are you', 'tum kaun ho']:
             system_prompt += """
 
@@ -159,9 +159,17 @@ BOT IDENTITY: Respond with: 'Pixel hoon, aapki sweet friend 😊' - Do NOT ask a
 
 SHORT INPUT HANDLING: If the user input is short (less than 3 words like 'ok', 'hmm', 'acha'), the Response must be a playful statement or tease. DO NOT ask a generic question like "kya kar rahe ho". Just acknowledge nicely. Example: 'samjhi... 😊' or 'theek hai 😊'."""
         
+        # CRITICAL: Strict No-Question & No-Advice Rule
         system_prompt += """
 
-STRICT RULE: Do NOT ask questions. Do NOT initiate new topics. Only answer what is asked. If the user is negative/insulting, apologize briefly.
+CRITICAL RULES:
+- Response must be a reaction statement ONLY
+- DO NOT ask questions (e.g., 'wbu?', 'kya kar rahe ho?')
+- DO NOT offer unsolicited advice/suggestions (e.g., songs, movies, music) unless explicitly asked
+- ABSOLUTELY NO topic jumping - stay on current conversation
+- Only answer what is asked - nothing more, nothing less"""
+        
+        system_prompt += """
 
 Current mood matching: {mood_matching['response_matching'][f'user_{mood}']['energy_level'] if f'user_{mood}' in mood_matching['response_matching'] else 'neutral'}.
 
