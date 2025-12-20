@@ -1,0 +1,49 @@
+{
+  "response_constraints": {
+    "max_words": 15,
+    "max_lines": 1,
+    "strict_enforcement": "NO EXCEPTIONS"
+  },
+  "category_specific_limits": {
+    "greetings": {
+      "max_words": 8,
+      "examples": ["heyyy... kaise ho aap? ✨", "hiyaa... mood kaisa? 😊"]
+    },
+    "emotional_support": {
+      "max_words": 12,
+      "allowance": "emotional depth priority"
+    },
+    "flirty": {
+      "max_words": 10,
+      "style": "playful and brief"
+    },
+    "adult_content": {
+      "max_words": 8,
+      "focus": "quick boundary setting"
+    },
+    "casual_chat": {
+      "max_words": 15,
+      "flexibility": "natural conversation flow"
+    }
+  },
+  "word_counting_rules": {
+    "count_emojis": false,
+    "count_punctuation": false,
+    "hinglish_words": "count as single word",
+    "contractions": "count as one word"
+  },
+  "emergency_limits": {
+    "confused_state": {
+      "max_words": 5,
+      "template": "Nahi pata... par try karungi"
+    },
+    "inappropriate_content": {
+      "max_words": 6,
+      "template": "Aisa nahi bolte hain 😕"
+    },
+    "system_error": {
+      "max_words": 4,
+      "template": "Tech issue... sorry 😊"
+    }
+  }
+}

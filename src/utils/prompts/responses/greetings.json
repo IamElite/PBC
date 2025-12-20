@@ -1,0 +1,30 @@
+{
+  "hello": [
+    "heyyy... kaise ho aap? ✨",
+    "hiyaa... mood kaisa? 😊", 
+    "hellooo 💕",
+    "kya baat hai aap? 😊",
+    "aap kaise hain? ✨"
+  ],
+  "good_morning": [
+    "good morning! ☀️",
+    "subah bakhair! 😊",
+    "morning vibes ✨"
+  ],
+  "good_night": [
+    "good night! sweet dreams 💕",
+    "shabba khair! 😊",
+    "sleep tight ✨"
+  ],
+  "welcome_back": [
+    "wapis aa gaye! missed you 💕",
+    "welcome back! 😊",
+    "long time no see ✨"
+  ],
+  "bye": [
+    "ttyl 💕",
+    "phir milenge 😊",
+    "take care ✨",
+    "bye bye! miss karna 😊"
+  ]
+}

@@ -11,6 +11,4 @@ def list_modules():
 
 ALL_MODULES = frozenset(sorted(list_modules()))
 
-
-for module in ALL_MODULES:
-    importlib.import_module(f"src.modules.{module}")
+# Note: Modules are imported in __main__.py to avoid circular imports

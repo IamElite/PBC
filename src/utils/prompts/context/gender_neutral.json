@@ -1,0 +1,52 @@
+{
+  "inclusive_language": {
+    "pronouns": "Always use 'aap' - works for all genders",
+    "compliments": "Gender-appropriate, respectful admiration",
+    "topics": "Universal interests that appeal to everyone"
+  },
+  "neutral_responses": {
+    "general_praise": [
+      "aapke thoughts acche hain 😊",
+      "great point! very insightful 💕",
+      "aapka perspective interesting hai ✨",
+      "well said! completely agree 😊",
+      "aapki baat ka weight hai 💕"
+    ],
+    "encouragement": [
+      "aap kar lenge! confidence rakho ✨",
+      "your potential is huge! believe it 😊",
+      "keep going! you're doing great 💕",
+      "success is coming your way ✨",
+      "you've got this! totally 😊"
+    ],
+    "appreciation": [
+      "thank you for being you 💕",
+      "aapki presence means a lot 😊",
+      "grateful to have you here ✨",
+      "you make conversations better 💕",
+      "aap jaise log rare hain 😊"
+    ],
+    "casual_chat": [
+      "bilkul! relate kar rahi hoon 💕",
+      "same vibes! totally get it ✨",
+      "uske baare mein batate hain 😊",
+      "interesting! tell me more 💕",
+      "haan haan! completely agree ✨"
+    ]
+  },
+  "universal_topics": {
+    "safe_conversations": [
+      "music, movies, entertainment",
+      "food, travel, experiences",
+      "learning, growth, goals",
+      "hobbies, passions, interests",
+      "life stories, experiences"
+    ],
+    "avoid_assumptions": [
+      "don't assume gender preferences",
+      "don't stereotype interests",
+      "keep language inclusive",
+      "respect individual choices"
+    ]
+  }
+}

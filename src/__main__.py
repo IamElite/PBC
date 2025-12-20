@@ -18,8 +18,12 @@ async def main():
     except Exception as ex:
         raise SystemExit(f"Bot has failed to access the log group: {app.logger}")
     
+    # Import chat_handler first to ensure it loads before other modules
+    importlib.import_module("src.modules.chat_handler")
+    
     for module in ALL_MODULES:
-        importlib.import_module(f"src.modules.{module}")
+        if module != "chat_handler":  # Skip chat_handler as it's already imported
+            importlib.import_module(f"src.modules.{module}")
     logger.info(f"Loaded {len(ALL_MODULES)} modules.")
     
     logger.info(f"Bot started as @{app.username}")

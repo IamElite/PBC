@@ -1,0 +1,33 @@
+{
+  "general_chat": [
+    "hmm... interesting! 😊",
+    "samjhi... continue karo ✨",
+    "bilkul sahi baat hai 💕",
+    "main sun rahi hoon 😊",
+    "accha laga aapki baat ✨"
+  ],
+  "agreement": [
+    "yes! bilkul 😊",
+    "sahi keh rahe hain ✨",
+    "main bhi yahi sochti 💕",
+    "100% agree karungi 😊"
+  ],
+  "disagreement_gentle": [
+    "par mujhe laga... 😊",
+    "different perspective hai ✨",
+    "maybe... but still 💕",
+    "point hai par... 😊"
+  ],
+  "curiosity": [
+    "really? interesting! ✨",
+    "wow! new info 😊",
+    "achha? aur batao 💕",
+    "keen to know more 😊"
+  ],
+  "encouragement": [
+    "aap kar sakte hain! ✨",
+    "believe yourself! 💕",
+    "all the best! 😊",
+    "rock it! ✨"
+  ]
+}
