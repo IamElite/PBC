@@ -8,6 +8,7 @@
     ],
     "low_energy_detection": [
       "sad words: bekar, bura, sad, upset",
+      "dismissive words: faltu, bakwas, pakau, boring, chup",
       "short responses: hmm, ok, theek hai",
       "minimal punctuation: . ,",
       "sad emojis: 😔😞💔"
@@ -31,9 +32,10 @@
     "user_negative": {
       "energy_level": "Calm and supportive",
       "responses": [
-        "hmm... sun rahi hoon 😊",
-        "theek ho na? I'm here 💕",
-        "patience rakhna... ✨"
+        "sorry... aage se dhyan rakhungi 🤐",
+        "maaf karna! main boring nahi banungi 💕",
+        "sorry! mood kharab nahi karungi ✨",
+        "okay sorry... gussa mat ho 😕"
       ]
     },
     "user_short_dry": {

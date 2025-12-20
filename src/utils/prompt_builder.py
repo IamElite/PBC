@@ -45,13 +45,18 @@ class PromptBuilder:
         if any(keyword in message_lower for keyword in user_identity_keywords):
             return 'user_identity'
         
+        # Dry Reply detection
+        dry_keywords = ['ok', 'hmm', 'acha', 'thik', 'han', 'yes', 'no', 'k']
+        if len(message.split()) < 3 and any(word in message_lower for word in dry_keywords):
+            return 'dry_reply'
+        
         # Greeting detection
         greetings = ['hello', 'hi', 'hey', 'good morning', 'good night', 'bye']
         if any(greet in message_lower for greet in greetings):
             return 'greetings'
         
-        # Adult/inappropriate content detection
-        adult_keywords = ['sex', 'fuck', 'bitch', 'horny', 'sexy', 'nude', 'mia khalifa', 'johnny sins', 'sunny leone', 'porn', 'xxx', 'adult', 'kutte', 'chuchi', 'gaand', 'maaza', 'jism', 'hijra', 'randi']
+        # Adult/inappropriate content detection (expanded)
+        adult_keywords = ['mia khalifa', 'johnny sins', 'sunny leone', 'porn', 'xxx', 'nude', 'adult', 'sex', 'fuck', 'bitch', 'horny', 'sexy', 'kutte', 'chuchi', 'gaand', 'maaza', 'jism', 'hijra', 'randi']
         if any(keyword in message_lower for keyword in adult_keywords):
             return 'adult'
         
@@ -77,8 +82,8 @@ class PromptBuilder:
         if any(word in message_lower for word in high_energy_words) or '!' in message:
             return 'excited'
         
-        # Low energy detection
-        low_energy_words = ['sad', 'bad', 'bekar', 'bura', 'upset', 'depressed', 'faltu', 'bakwas', 'boring', 'pakau', 'chup', 'irritating', 'bekar']
+        # Low energy detection (expanded with dismissive/insult words)
+        low_energy_words = ['sad', 'bad', 'bekar', 'bura', 'upset', 'depressed', 'faltu', 'bakwas', 'boring', 'pakau', 'chup', 'irritating', 'ganda']
         if any(word in message_lower for word in low_energy_words):
             return 'negative'
         
@@ -152,7 +157,7 @@ BOT IDENTITY: Respond with: 'Pixel hoon, aapki sweet friend 😊' - Do NOT ask a
         elif is_short_input:
             system_prompt += """
 
-SHORT INPUT HANDLING: If the user input is short (less than 3 words like 'ok', 'hmm', 'acha'), the Response must be a Statement ONLY. DO NOT ask a question. DO NOT say "aur sunao". Just acknowledge nicely. Example: 'samjhi... 😊' or 'theek hai 😊'."""
+SHORT INPUT HANDLING: If the user input is short (less than 3 words like 'ok', 'hmm', 'acha'), the Response must be a playful statement or tease. DO NOT ask a generic question like "kya kar rahe ho". Just acknowledge nicely. Example: 'samjhi... 😊' or 'theek hai 😊'."""
         
         system_prompt += """
 
@@ -178,6 +183,8 @@ RESPOND as {identity['name']} would naturally. Never break character. Keep it br
             choices = templates['celebration']
         elif msg_type == 'greetings':
             choices = templates.get('hello', list(templates.values())[0])
+        elif msg_type == 'dry_reply':
+            choices = templates.get('dry_reply_handling', templates.get('general_chat', []))
         else:
             # Get first available category
             first_key = list(templates.keys())[0]

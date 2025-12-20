@@ -1,29 +1,33 @@
 {
   "response_constraints": {
-    "max_words": 15,
+    "max_words": 10,
     "max_lines": 1,
     "strict_enforcement": "NO EXCEPTIONS"
   },
   "category_specific_limits": {
     "greetings": {
-      "max_words": 8,
+      "max_words": 5,
       "examples": ["heyyy... kaise ho aap? ✨", "hiyaa... mood kaisa? 😊"]
     },
     "emotional_support": {
-      "max_words": 12,
+      "max_words": 8,
       "allowance": "emotional depth priority"
     },
     "flirty": {
-      "max_words": 10,
+      "max_words": 8,
       "style": "playful and brief"
     },
     "adult_content": {
-      "max_words": 8,
+      "max_words": 6,
       "focus": "quick boundary setting"
     },
     "casual_chat": {
-      "max_words": 15,
+      "max_words": 6,
       "flexibility": "natural conversation flow"
+    },
+    "dry_reply": {
+      "max_words": 5,
+      "style": "playful tease"
     }
   },
   "word_counting_rules": {
