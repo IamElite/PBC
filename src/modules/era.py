@@ -39,6 +39,14 @@ chatbot_filter = filters.create(chatbot_filter_func)
 
 @app.on_message(filters.text & filters.group & chatbot_filter)
 async def mention_chatbot(_, message: Message):
+    # Check if bot is actually mentioned in the message
+    bot_username = f"@{app.me.username}" if app.me else None
+    is_mentioned = bot_username and bot_username in message.text
+    
+    # Only respond if bot is actually mentioned
+    if not is_mentioned:
+        return
+    
     await app.send_chat_action(message.chat.id, ChatAction.TYPING)
     
     user_id = message.from_user.id
@@ -49,7 +57,7 @@ async def mention_chatbot(_, message: Message):
     )
 
     # Always use existing chat history (no new_chat = True)
-    reply = await chatbot_api.ask_question(user_id, chat_id, question, user_name, new_chat=False)
+    reply = await chatbot_api.ask_question(user_id, chat_id, question, user_name, is_group=True, new_chat=False)
 
     if not reply or not isinstance(reply, str) or not reply.strip():
         # Optional: silently fail instead of sending error (better UX)
