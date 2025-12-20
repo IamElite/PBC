@@ -10,7 +10,7 @@ from src.utils.era import chatbot_api
 
 @app.on_message(filters.text & ~filters.bot & ~filters.command(["start", "ping", "broadcast"]))
 async def handle_chat(client: Client, message: Message):
-    """Main chat handler for all messages (era.py handles group mentions)"""
+    """Main chat handler - only for private chats or bot mentions in groups"""
     
     try:
         # Add user to database if not exists
@@ -23,10 +23,46 @@ async def handle_chat(client: Client, message: Message):
         # Check if this is a group chat
         is_group = message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]
         
+        # In group chats, only respond if bot is mentioned
+        if is_group:
+            bot_username = f"@{client.me.username}" if client.me else None
+            if not (bot_username and bot_username in user_message):
+                return  # Don't respond in groups without mention
+        
+        # Check if message contains other bot commands (ignore them)
+        other_bot_commands = [
+            '/play', '/pause', '/skip', '/volume', '/queue', '/stop', '/resume',  # Music bots
+            '/start', '/help', '/stats', '/ban', '/mute', '/kick', '/warn',  # Admin bots
+            '/weather', '/time', '/joke', '/quote', '/translate', '/convert',  # Utility bots
+            '/anime', '/manga', '/character', '/search', '/download',  # Media bots
+            '/crypto', '/price', '/chart', '/balance', '/transfer',  # Finance bots
+            '/news', '/article', '/blog', '/post', '/tweet'  # Social bots
+        ]
+        
+        # Check if it's a command for another bot
+        message_lower = user_message.lower()
+        is_other_bot_command = False
+        
+        for command in other_bot_commands:
+            if command in message_lower:
+                # Check if it's specifically for another bot (contains @username but not our bot)
+                if '@' in user_message:
+                    bot_username = f"@{client.me.username}" if client.me else None
+                    if bot_username and bot_username not in user_message:
+                        is_other_bot_command = True
+                        break
+                # If no @username, still treat as potential other bot command if it starts with /
+                elif message_lower.strip().startswith(command):
+                    is_other_bot_command = True
+                    break
+        
+        if is_other_bot_command:
+            return  # Ignore commands for other bots
+        
         # Get AI response using our dynamic system
         user_name = message.from_user.first_name if message.from_user else None
         
-        # Call AI API for all messages
+        # Call AI API for messages that should be handled
         ai_response = await chatbot_api.ask_question(
             user_id=message.from_user.id if message.from_user else 0,
             chat_id=message.chat.id,
