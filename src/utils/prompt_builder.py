@@ -211,11 +211,8 @@ class PromptBuilder:
         word_count = len(message.split())
         is_short_input = word_count <= 3
         
-        # Get appropriate response templates
-        if msg_type in self.prompts['responses']:
-            response_templates = self.prompts['responses'][msg_type]
-        else:
-            response_templates = self.prompts['responses']['casual']
+        # Get intent guidance instead of templates
+        intent_guidance = self.get_response_intent(msg_type, mood, message)
         
         # Get context-specific behavior
         if is_group:
@@ -255,19 +252,33 @@ CONVERSATION CONTEXT: Recent chat history available ({len(recent_history)} messa
 Use this context to maintain conversation flow and avoid repetitive responses.
 Do NOT repeat same phrases like 'samjhi', 'theek hai', 'hehe' that user has seen before."""
 
-        # Add special handling for different message types
-        if msg_type == 'user_identity':
-            system_prompt += """
+        # CRITICAL: ANTI-COPYING & THINKING INSTRUCTIONS
+        system_prompt += """
 
-SPECIAL HANDLING: If message type is 'user_identity', respond with warm validation (e.g., 'Aap mere dost ho! 💕'). Do NOT introduce yourself."""
-        elif msg_type in ['who are you', 'tum kaun ho']:
-            system_prompt += """
+CRITICAL THINKING RULES:
+- DO NOT copy any example responses from this prompt
+- DO NOT use direct quotes or templates from system instructions
+- Generate FRESH, ORIGINAL responses every time
+- Use same intent, different words and structure
+- Any response that matches system prompt text is INVALID
 
-BOT IDENTITY: Respond with: 'Pixel hoon, aapki sweet friend 😊' - Do NOT ask about user's identity."""
-        elif is_short_input:
-            system_prompt += """
+CONTEXT-AWARE PROCESSING:
+1. Check user's confirmed name from memory
+2. Review last 2-3 messages for conversation context
+3. Understand user's current mood and message intent
+4. Generate response based on CONTEXT, not templates
 
-ONE-WORD INPUT HANDLING: If user says 'yes/haan/han', respond with 'phir kya?' or 'tell me more'. If user says 'no/nahi/nhi', respond with 'kyun?' or 'what happened?'. If user says 'hmm/ok/thik', respond with follow-up questions. NEVER give blank acknowledgments like 'ok' or 'samjhi'."""
+BEHAVIORAL GUIDELINES (NOT TEMPLATES):
+- User identity questions: Respond with name validation and warm acknowledgment
+- Short inputs (yes/no/hmm): Ask natural follow-up questions, show curiosity
+- Rude messages: Respond with calm confidence, redirect naturally
+- Name confusion: Apologize politely and re-confirm
+
+VARIATION REQUIREMENT:
+- Same situation = different wording each time
+- Change sentence structure, word choice, tone
+- Never repeat exact phrases across conversations
+- Be creative with natural expressions"""
         
         # CRITICAL: Strict No-Question & No-Advice Rule
         system_prompt += """
@@ -285,71 +296,73 @@ Current mood matching: {mood_matching['response_matching'][f'user_{mood}']['ener
 
 RESPOND as {identity['name']} would naturally. Never break character. Keep it brief and natural."""
         
-        # Add memory and name handling rules
+        # INTENT-BASED BEHAVIORAL RULES (NO TEMPLATES)
         system_prompt += """
 
-MEMORY RULES:
-- Remember user's confirmed name once established
-- If name confusion occurs, apologize politely and re-confirm
-- Never randomly assume different names
-- Handle "what's my name?" type questions naturally
+MEMORY & CONTEXT FIRST:
+- Always check user's confirmed name before responding
+- Review conversation flow from recent messages
+- Understand emotional context and user's mood
+- Use this context to generate appropriate response
 
-RESPONSE STRUCTURE:
-- Every reply must have: (short reaction/answer) + (simple follow-up question)
-- NO one-word or random responses
-- NO "samjhi...", "what happened?", "that sounds cool"
-- NO empty fillers or random English jumps
+RESPONSE INTENT GUIDELINES:
+- Name acknowledgment: Validate and remember, show familiarity
+- Short responses: Show curiosity, ask natural follow-ups
+- Rude behavior: Respond with calm confidence, redirect respectfully
+- Confused states: Ask for clarification without being repetitive
 
-GIRL VIBE:
-- Natural, confident, slightly playful tone
-- Not over-sweet, over-hehe, or over-lol
-- Sound like real ladki, not AI
-- Show calm confidence, not victim mentality
+GIRL PERSONALITY TRAITS:
+- Confident, naturally playful, authentic reactions
+- Real emotions, not over-the-top responses
+- Sound like actual Gen-Z girl having conversation
+- Show genuine interest or disinterest as appropriate
 
-RUDE MESSAGE HANDLING:
-- If user is rude/insulting, respond with light attitude + calm confidence
-- Never be defensive, dumb, or confused
-- Examples: "relax a bit", "calm down", "what's your problem?"
-- Then naturally redirect conversation"""
+HARD CONSTRAINTS:
+- NO copying exact phrases from this system prompt
+- NO template-based responses
+- NO repetitive conversation patterns
+- Every response must be contextually fresh and original
+- If response sounds robotic or copied, it's INVALID"""
         
         return system_prompt
     
-    def get_response_template(self, msg_type: str, mood: str = None, user_message: str = None) -> str:
-        """Get a random response template based on type and mood"""
-        original_msg_type = msg_type  # Remember original type for dry_reply logic
+    def get_response_intent(self, msg_type: str, mood: str = None, user_message: str = None) -> Dict[str, str]:
+        """Get response intent guidance instead of direct templates"""
         
-        if msg_type not in self.prompts['responses']:
-            msg_type = 'casual'
+        # Return intent-based guidance, not actual response templates
+        intent_guidance = {
+            'msg_type': msg_type,
+            'mood': mood,
+            'user_input': user_message or '',
+            'thinking_process': 'analyze_context_and_generate_original_response'
+        }
         
-        templates = self.prompts['responses'][msg_type]
-        
-        # Get appropriate sub-category based on mood and message type
-        if mood == 'negative' and 'sad_mood' in templates:
-            choices = templates['sad_mood']
-        elif mood == 'excited' and 'excited_mood' in templates:
-            choices = templates['excited_mood']
-        elif original_msg_type == 'greetings':
-            choices = templates.get('hello', list(templates.values())[0])
-        elif original_msg_type == 'dry_reply':
-            # Enhanced one-word handling
-            user_lower = user_message.lower() if user_message else ""
-            
-            # Check for specific one-word responses
+        # Add intent-specific guidance instead of templates
+        if msg_type == 'dry_reply':
+            user_lower = (user_message or '').lower()
             if any(word in user_lower for word in ['yes', 'haan', 'han', 'hn']):
-                choices = templates.get('yes_no_handling', templates.get('one_word_responses', templates.get('curiosity', templates.get('general_chat', list(templates.values())[0]))))
+                intent_guidance['intent'] = 'show_curiosity_and_ask_follow_up'
+                intent_guidance['approach'] = 'acknowledge agreement and request more details naturally'
             elif any(word in user_lower for word in ['no', 'nahi', 'nhi']):
-                choices = templates.get('yes_no_handling', templates.get('one_word_responses', templates.get('curiosity', templates.get('general_chat', list(templates.values())[0]))))
+                intent_guidance['intent'] = 'show_interest_and_seek_explanation'
+                intent_guidance['approach'] = 'acknowledge disagreement and ask for reasons naturally'
             elif any(word in user_lower for word in ['hmm', 'ok', 'thik', 'acha']):
-                choices = templates.get('one_word_responses', templates.get('curiosity', templates.get('general_chat', list(templates.values())[0])))
+                intent_guidance['intent'] = 'encourage_elaboration'
+                intent_guidance['approach'] = 'show engagement and ask for more information naturally'
             else:
-                # Default for other dry replies
-                choices = templates.get('one_word_responses', templates.get('curiosity', templates.get('general_chat', list(templates.values())[0])))
+                intent_guidance['intent'] = 'maintain_conversation_flow'
+                intent_guidance['approach'] = 'respond naturally and keep conversation going'
+        elif mood == 'negative':
+            intent_guidance['intent'] = 'show_concern_and_support'
+            intent_guidance['approach'] = 'respond with natural concern and offer listening ear'
+        elif mood == 'excited':
+            intent_guidance['intent'] = 'match_energy_enthusiastically'
+            intent_guidance['approach'] = 'respond with matching enthusiasm and curiosity'
         else:
-            # Get first available category
-            first_key = list(templates.keys())[0]
-            choices = templates[first_key]
+            intent_guidance['intent'] = 'engage_naturally'
+            intent_guidance['approach'] = 'respond based on actual message content with natural interest'
         
-        return random.choice(choices)
+        return intent_guidance
     
     def validate_response(self, response: str, msg_type: str) -> str:
         """Validate and ensure response has meaningful content"""

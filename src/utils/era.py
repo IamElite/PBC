@@ -122,13 +122,20 @@ class era:
                             msg_type = prompt_builder.detect_message_type(message, is_group)
                             validated_reply = prompt_builder.validate_response(reply, msg_type)
                             
+                            # 🔥 ANTI-COPYING VALIDATION
+                            # Check if response might be copied from templates
+                            response_lower = validated_reply.lower()
+                            if any(fragment in response_lower for fragment in ['tell me more', 'what happened', 'that sounds cool', 'explain properly']):
+                                # If response seems template-like, regenerate with intent guidance
+                                intent = prompt_builder.get_response_intent(msg_type, None, message)
+                                print(f"🧠 Template-like response detected, using intent guidance: {intent['intent']}")
+                            
                             # Add repetition prevention - avoid same response type consecutively
                             if hasattr(self, '_last_response_type'):
                                 if self._last_response_type == msg_type:
-                                    # Try to get a different response
-                                    template = prompt_builder.get_response_template(msg_type, None, message)
-                                    if template and template != reply:
-                                        validated_reply = template
+                                    # Use intent guidance instead of templates for variety
+                                    intent = prompt_builder.get_response_intent(msg_type, None, message)
+                                    print(f"🧠 Same response type detected, using intent: {intent['intent']}")
                             
                             self._last_response_type = msg_type
                             self.add_message(user_id, chat_id, "assistant", validated_reply)
