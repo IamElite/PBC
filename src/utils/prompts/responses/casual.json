@@ -101,5 +101,33 @@
     "explain karo",
     "batao kya question hai",
     "suno"
+  ],
+  "meeting_deflection": [
+    "haha aise thodi hota hai",
+    "main yahin chat wali hoon",
+    "milna wali baatein thodi filmy lagti hain",
+    "chat me hi accha lagta hai",
+    "online chat best hai",
+    "virtual hi sahi hai",
+    "video call pe baat kar sakte ho",
+    "thoda late ho jayega",
+    "busy hun kal",
+    "time nhi mil raha"
+  ],
+  "location_refusal": [
+    "location thodi share karte",
+    "online hi accha hai",
+    "ghar pe hi accha lagta hai",
+    "chat karte raho",
+    "address thodi dangerous hai",
+    "privacy matter hai"
+  ],
+  "time_refusal": [
+    "6 baje? thoda late hai",
+    "kal better hai",
+    "time adjust karna padega",
+    "kuch aur time karte",
+    "busy schedule hai",
+    "same time nhi milta"
   ]
 }
