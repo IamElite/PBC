@@ -10,20 +10,14 @@ class PromptBuilder:
         self._load_all_prompts()
     
     def _load_all_prompts(self):
-        """Load all JSON files from prompts directory"""
         self.prompts = {}
         
-        # Load persona files
         self.prompts['persona'] = self._load_category('persona')
-        # Load response files  
         self.prompts['responses'] = self._load_category('responses')
-        # Load context files
         self.prompts['context'] = self._load_category('context')
-        # Load config files
         self.prompts['config'] = self._load_category('config')
     
     def _load_category(self, category: str) -> Dict:
-        """Load all JSON files from a category folder"""
         category_path = os.path.join(self.prompts_dir, category)
         result = {}
         
@@ -38,86 +32,60 @@ class PromptBuilder:
         return result
     
     def detect_message_type(self, message: str, is_group: bool = False) -> str:
-        """Detect the type of message based on content"""
         message_lower = message.lower()
         
-        # User Identity detection
         user_identity_keywords = ['ham kon h', 'main kon hoon', 'who am i', 'mera naam kya h']
         if any(keyword in message_lower for keyword in user_identity_keywords):
             return 'user_identity'
         
-        # One-word/dry reply detection
         one_word_keywords = ['ok', 'hmm', 'acha', 'thik', 'han', 'yes', 'no', 'k', 'sahi', 'hn', 'nhi']
         if len(message.split()) <= 2 and any(word in message_lower for word in one_word_keywords):
             return 'dry_reply'
         
-        # Greeting detection
         greetings = ['hello', 'hi', 'hey', 'good morning', 'good night', 'bye']
         if any(greet in message_lower for greet in greetings):
             return 'greetings'
         
-        # Adult/inappropriate content detection (expanded)
         adult_keywords = ['mia khalifa', 'johnny sins', 'sunny leone', 'porn', 'xxx', 'nude', 'adult', 'sex', 'fuck', 'bitch', 'horny', 'sexy', 'kutte', 'chuchi', 'gaand', 'maaza', 'jism', 'hijra', 'randi']
         if any(keyword in message_lower for keyword in adult_keywords):
             return 'adult'
         
-        # Flirting detection
         flirty_keywords = ['cute', 'beautiful', 'love', 'date', 'crush', 'marry']
         if any(keyword in message_lower for keyword in flirty_keywords):
             return 'flirty'
         
-        # Emotional content detection
         emotional_keywords = ['sad', 'cry', 'depressed', 'happy', 'excited', 'angry']
         if any(keyword in message_lower for keyword in emotional_keywords):
             return 'emotional'
         
-        # Default to casual
         return 'casual'
     
     def detect_mood(self, message: str) -> str:
-        """Detect user's mood from message"""
         message_lower = message.lower()
         
-        # High energy detection
         high_energy_words = ['wow', 'amazing', 'awesome', 'wooo', 'yay', 'omg']
         if any(word in message_lower for word in high_energy_words) or '!' in message:
             return 'excited'
         
-        # Low energy detection (expanded with dismissive/insult words)
         low_energy_words = ['sad', 'bad', 'bekar', 'bura', 'upset', 'depressed', 'faltu', 'bakwas', 'boring', 'pakau', 'chup', 'irritating', 'ganda']
         if any(word in message_lower for word in low_energy_words):
             return 'negative'
         
-        # Short/dry response
         if len(message.split()) <= 3:
             return 'dry'
         
         return 'neutral'
     
     async def check_name_confirmation_needed(self, message: str, user_id: int) -> tuple:
-        """
-        Check if user name confirmation is needed
-        
-        Args:
-            message: User message
-            user_id: User ID
-        
-        Returns:
-            tuple: (needs_confirmation, correction_needed, response)
-        """
         try:
-            # Check for name-related messages
             message_lower = message.lower()
             
-            # Patterns that indicate name confusion
             name_confusion_patterns = [
                 'kya naam hai', 'naam kya hai', 'who is this', 'kon hai',
                 'tum kaun ho', 'what is your name', 'your name'
             ]
             
-            # Check if user is asking about name
             if any(pattern in message_lower for pattern in name_confusion_patterns):
-                # Check if we have confirmed name
                 user_memory = temp_users_manager.user_memories.get(user_id)
                 if user_memory and user_memory.get('confirmed_name'):
                     confirmed_name = user_memory['confirmed_name']
@@ -125,14 +93,12 @@ class PromptBuilder:
                 else:
                     return True, False, None
             
-            # Check if user is correcting name confusion
             correction_patterns = [
                 'naam nahi hai', 'name nahi hai', 'galat naam',
                 'wrong name', 'not my name', 'mai nahi hu'
             ]
             
             if any(pattern in message_lower for pattern in correction_patterns):
-                # Get current memory
                 user_memory = await temp_users_manager.get_user_memory(user_id)
                 if user_memory:
                     response = await temp_users_manager.handle_name_correction(user_id, message)
@@ -145,16 +111,6 @@ class PromptBuilder:
             return False, False, None
     
     async def detect_rude_message(self, message: str, user_id: int) -> tuple:
-        """
-        Detect rude messages and return appropriate response
-        
-        Args:
-            message: User message
-            user_id: User ID
-        
-        Returns:
-            tuple: (is_rude, response)
-        """
         try:
             is_rude = await temp_users_manager.is_rude_message(message)
             if is_rude:
@@ -165,71 +121,41 @@ class PromptBuilder:
             print(f"Error detecting rude message: {e}")
             return False, None
     
-    # NEW: Chat History Integration Methods
     async def process_user_message(self, user_id: int, message: str) -> tuple:
-        """
-        Process user message with chat history integration
-        
-        Args:
-            user_id: Telegram user ID
-            message: User message content
-        
-        Returns:
-            tuple: (message_added_safely, recent_history, last_user_message)
-        """
-        # Process message with storage system
         message_added, recent_history = await temp_users_manager.store_temp_user_chat(user_id, message)
         
-        # Get last user message for consistency
         last_user_message = await temp_users_manager.get_temp_user_chat(user_id)
         
         return message_added, recent_history, last_user_message
     
     async def add_bot_response(self, user_id: int, response: str):
-        """
-        Add bot response to chat history
-        
-        Args:
-            user_id: Telegram user ID
-            response: Bot response content
-        """
         await temp_users_manager.store_temp_user_chat(user_id, response)
     
     def build_system_prompt(self, message: str, is_group: bool = False, user_context: Dict = None, recent_history: List = None) -> str:
-        """Build dynamic system prompt based on context and chat history"""
-        
-        # Get base persona
         identity = self.prompts['persona']['identity']
         tone = self.prompts['persona']['tone'] 
         boundaries = self.prompts['persona']['boundaries']
         
-        # Detect message type and mood
         msg_type = self.detect_message_type(message, is_group)
         mood = self.detect_mood(message)
         
-        # Check for short inputs
         word_count = len(message.split())
         is_short_input = word_count <= 3
         
-        # Get intent guidance instead of templates
         intent_guidance = self.get_response_intent(msg_type, mood, message)
         
-        # Get context-specific behavior
         if is_group:
             context_behavior = self.prompts['context']['group_chat']
         else:
             context_behavior = self.prompts['context']['private_chat']
         
-        # Get config limits
         word_limits = self.prompts['config']['word_limits']
         mood_matching = self.prompts['config']['mood_matching']
         
-        # Get interaction style safely
         interaction_style = context_behavior.get('group_behavior', {}).get('interaction_style') or \
                           context_behavior.get('private_behavior', {}).get('interaction_style') or \
                           context_behavior.get('interaction_style', 'Friendly, warm and respectful like a Gen-Z friend')
         
-        # Build the system prompt
         system_prompt = f"""You are {identity['name']}, {identity['core_identity']}. 
 
 PERSONA: {identity['personality']}. Interests: {', '.join(identity['interests'])}.
@@ -243,16 +169,14 @@ RESPONSE STYLE: Based on message type "{msg_type}" with mood "{mood}".
 Max {word_limits['response_constraints']['max_words']} words, {word_limits['response_constraints']['max_lines']} line.
 
 BOUNDARIES: {', '.join(boundaries['safety_rules']['hard_bans'][:3])}."""
-
-        # NEW: Add conversation consistency logic
+        
         if recent_history:
             system_prompt += f"""
 
 CONVERSATION CONTEXT: Recent chat history available ({len(recent_history)} messages).
 Use this context to maintain conversation flow and avoid repetitive responses.
 Do NOT repeat same phrases like 'samjhi', 'theek hai', 'hehe' that user has seen before."""
-
-        # CRITICAL: ANTI-COPYING & THINKING INSTRUCTIONS
+        
         system_prompt += """
 
 CRITICAL THINKING RULES:
@@ -280,7 +204,6 @@ VARIATION REQUIREMENT:
 - Never repeat exact phrases across conversations
 - Be creative with natural expressions"""
         
-        # CRITICAL: Strict No-Question & No-Advice Rule
         system_prompt += """
 
 CRITICAL RULES:
@@ -296,7 +219,6 @@ Current mood matching: {mood_matching['response_matching'][f'user_{mood}']['ener
 
 RESPOND as {identity['name']} would naturally. Never break character. Keep it brief and natural."""
         
-        # INTENT-BASED BEHAVIORAL RULES (NO TEMPLATES)
         system_prompt += """
 
 MEMORY & CONTEXT FIRST:
@@ -327,9 +249,6 @@ HARD CONSTRAINTS:
         return system_prompt
     
     def get_response_intent(self, msg_type: str, mood: str = None, user_message: str = None) -> Dict[str, str]:
-        """Get response intent guidance instead of direct templates"""
-        
-        # Return intent-based guidance, not actual response templates
         intent_guidance = {
             'msg_type': msg_type,
             'mood': mood,
@@ -337,7 +256,6 @@ HARD CONSTRAINTS:
             'thinking_process': 'analyze_context_and_generate_original_response'
         }
         
-        # Add intent-specific guidance instead of templates
         if msg_type == 'dry_reply':
             user_lower = (user_message or '').lower()
             if any(word in user_lower for word in ['yes', 'haan', 'han', 'hn']):
@@ -365,34 +283,26 @@ HARD CONSTRAINTS:
         return intent_guidance
     
     def validate_response(self, response: str, msg_type: str) -> str:
-        """Validate and ensure response has meaningful content"""
         word_limits = self.prompts['config']['word_limits']
         
-        # Get appropriate max words for this type
         if msg_type in word_limits['category_specific_limits']:
             max_words = word_limits['category_specific_limits'][msg_type]['max_words']
         else:
             max_words = word_limits['response_constraints']['max_words']
         
-        # Count words (excluding emojis)
         words = response.split()
         filtered_words = [word for word in words if not word.startswith(('🙂', '😊', '💕', '✨', '😍', '😉', '🎉'))]
         
-        # If response is too long, try to make it shorter without losing meaning
         if len(filtered_words) > max_words:
-            # Check if response contains meaningful elements
             response_lower = response.lower()
             forbidden_fragments = word_limits.get('meaning_validation', {}).get('forbidden_fragments', [])
             
-            # If it's already a short meaningless response, don't truncate further
             if any(fragment in response_lower for fragment in forbidden_fragments):
                 return response
             
-            # Try to shorten by removing less important words
             important_words = [w for w in words if len(w) > 2 and w not in ['the', 'and', 'but', 'hai', 'hu', 'mai', 'kya', 'kyun', 'kaise']]
             
             if len(important_words) <= max_words:
-                # Keep important words and essential punctuation
                 final_words = []
                 word_count = 0
                 
@@ -403,7 +313,6 @@ HARD CONSTRAINTS:
                     if word_count <= max_words:
                         final_words.append(word)
                     elif word in ['.', '?', '!', ',']:
-                        # Add punctuation only if it helps complete thought
                         final_words.append(word)
                         break
                     else:
@@ -411,15 +320,12 @@ HARD CONSTRAINTS:
                 
                 response = ' '.join(final_words).strip()
             
-            # If still too long and ends with ellipsis, try to find better ending
             if response.endswith('... 😊') and len(response.split()) > max_words + 2:
-                # Find natural ending points
                 if '?' in response:
                     response = response.split('?')[0] + '?'
                 elif '.' in response:
                     response = response.split('.')[0] + '.'
                 else:
-                    # Take only up to max_words
                     words_to_keep = []
                     word_count = 0
                     for word in words:
@@ -431,10 +337,8 @@ HARD CONSTRAINTS:
                             break
                     response = ' '.join(words_to_keep).strip()
         
-        # Ensure single line
         response = response.replace('\n', ' ').strip()
         
         return response
 
-# Global instance
 prompt_builder = PromptBuilder()

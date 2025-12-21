@@ -1,18 +1,3 @@
-"""
-Temp Users Chat Storage System for Pixel Bot
-=============================================
-
-MongoDB-based temp users chat data storage with:
-- BULK MONGO URLS HANDLING for temp users
-- 26 Public MongoDB URLs integration
-- Multiple database connections support
-- Hash-based user distribution
-- Auto cleanup (2 days retention)
-- Safety checks for real-life data
-
-Author: AI Backend Engineer
-"""
-
 import asyncio
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Tuple
@@ -20,11 +5,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 
 class TempUsersManager:
-    """Temp users chat data management system using 26 public MongoDB URLs"""
-    
     def __init__(self):
-        """Initialize with 26 public MongoDB URLs"""
-        # ALL 26 PUBLIC MongoDB URLs for temp users
         self.public_mongo_urls = [
             "mongodb+srv://hnyx:wywyw2@cluster0.9dxlslv.mongodb.net/?retryWrites=true&w=majority",
             "mongodb+srv://ravi:ravi12345@cluster0.hndinhj.mongodb.net/?retryWrites=true&w=majority",
@@ -54,14 +35,11 @@ class TempUsersManager:
             "mongodb+srv://public:abishnoimf@cluster0.rqk6ihd.mongodb.net/?retryWrites=true&w=majority"
         ]
         
-        # Storage connections
-        self.bulk_connections = {}  # Store multiple MongoDB connections
-        self.temp_user_collections = {}  # Store temp user collections
+        self.bulk_connections = {}
+        self.temp_user_collections = {}
         
-        # User memory tracking
-        self.user_memories = {}  # Store user name confirmations and memory
+        self.user_memories = {}
         
-        # Safety keywords to detect real-life data
         self.dangerous_keywords = [
             'meet', 'meeting', 'milna', 'aaunga', 'aa rahi hoon',
             'address', 'ghar', 'home', 'location', 'where',
@@ -69,32 +47,19 @@ class TempUsersManager:
             'tomorrow', 'kal', 'day', 'date', 'place'
         ]
     
-    # Initialize all 26 public MongoDB URLs
     async def initialize_all_public_urls(self):
-        """
-        Automatically initialize all 26 public MongoDB URLs for temp users
-        Call this method when starting the bot
-        """
         try:
-            print(f"🚀 Initializing {len(self.public_mongo_urls)} public MongoDB URLs...")
+            print(f"Initializing {len(self.public_mongo_urls)} public MongoDB URLs...")
             await self.add_bulk_mongo_urls(self.public_mongo_urls)
-            print(f"✅ All {len(self.public_mongo_urls)} public MongoDB URLs initialized successfully!")
+            print(f"All {len(self.public_mongo_urls)} public MongoDB URLs initialized successfully!")
             
-            # Show statistics
             stats = await self.get_bulk_stats()
-            print(f"📊 Bulk Stats: {stats}")
+            print(f"Bulk Stats: {stats}")
             
         except Exception as e:
-            print(f"❌ Error initializing public URLs: {e}")
+            print(f"Error initializing public URLs: {e}")
     
-    # Add multiple MongoDB URLs for temp users
     async def add_bulk_mongo_urls(self, mongo_urls: List[str]):
-        """
-        Add multiple MongoDB URLs for temp users
-        
-        Args:
-            mongo_urls: List of MongoDB connection URLs
-        """
         try:
             successful_connections = 0
             failed_connections = []
@@ -103,7 +68,6 @@ class TempUsersManager:
                 try:
                     connection_name = f"temp_db_{i+1}"
                     
-                    # Create new connection for temp users
                     temp_client = AsyncIOMotorClient(mongo_url)
                     temp_db = temp_client["temp_chat_data"]
                     temp_collection = temp_db["temp_users"]
@@ -111,37 +75,26 @@ class TempUsersManager:
                     self.bulk_connections[connection_name] = temp_client
                     self.temp_user_collections[connection_name] = temp_collection
                     
-                    print(f"✅ Added temp Mongo connection: {connection_name}")
+                    print(f"Added temp Mongo connection: {connection_name}")
                     successful_connections += 1
                     
                 except Exception as e:
                     failed_connections.append(f"{connection_name}: {str(e)}")
-                    print(f"❌ Failed to connect to {connection_name}: {e}")
+                    print(f"Failed to connect to {connection_name}: {e}")
             
-            print(f"🗄️ Total successful connections: {successful_connections}/{len(mongo_urls)}")
+            print(f"Total successful connections: {successful_connections}/{len(mongo_urls)}")
             
             if failed_connections:
-                print(f"⚠️ Failed connections: {len(failed_connections)}")
-                for failed in failed_connections[:5]:  # Show first 5 failures
+                print(f"Failed connections: {len(failed_connections)}")
+                for failed in failed_connections[:5]:
                     print(f"   - {failed}")
             
         except Exception as e:
-            print(f"❌ Error adding bulk Mongo URLs: {e}")
+            print(f"Error adding bulk Mongo URLs: {e}")
     
-    # Get appropriate temp collection for a user based on user_id hash
     async def get_temp_collection(self, user_id: int):
-        """
-        Get appropriate temp collection for a user based on user_id hash
-        
-        Args:
-            user_id: Telegram user ID
-        
-        Returns:
-            Collection object for temp storage
-        """
-        # Hash user_id to distribute across temp collections
         if len(self.temp_user_collections) == 0:
-            print("⚠️ No temp collections available! Initialize with initialize_all_public_urls()")
+            print("No temp collections available! Initialize with initialize_all_public_urls()")
             return None
             
         collection_index = user_id % len(self.temp_user_collections)
@@ -150,64 +103,41 @@ class TempUsersManager:
         
         return self.temp_user_collections[collection_name]
     
-    # Store temp user chat data in bulk Mongo connections
     async def store_temp_user_chat(self, user_id: int, username: str, chat_data: Dict):
-        """
-        Store temp user chat data in bulk Mongo connections
-        
-        Args:
-            user_id: Telegram user ID
-            username: User's username
-            chat_data: Complete chat data to store
-        """
         try:
-            # Safety check - don't store dangerous messages
             if self._is_dangerous_message(chat_data.get('message', '')):
-                print(f"⚠️ BLOCKED: Dangerous message from user {user_id}: {str(chat_data)[:50]}...")
+                print(f"BLOCKED: Dangerous message from user {user_id}: {str(chat_data)[:50]}...")
                 return False
             
-            # Get appropriate temp collection
             temp_collection = await self.get_temp_collection(user_id)
             
             if not temp_collection:
-                print(f"⚠️ No temp collection available for user {user_id}")
+                print(f"No temp collection available for user {user_id}")
                 return False
             
-            # Prepare temp user data
             temp_user_data = {
                 "user_id": user_id,
                 "username": username,
                 "chat_data": chat_data,
                 "created_at": datetime.utcnow(),
                 "last_updated": datetime.utcnow(),
-                "is_temp": True  # Mark as temporary data
+                "is_temp": True
             }
             
-            # Store in temp collection (upsert)
             await temp_collection.update_one(
                 {"user_id": user_id},
                 {"$set": temp_user_data},
                 upsert=True
             )
             
-            print(f"📦 Stored temp chat data for user {user_id} ({username})")
+            print(f"Stored temp chat data for user {user_id} ({username})")
             return True
             
         except Exception as e:
-            print(f"❌ Error storing temp user chat: {e}")
+            print(f"Error storing temp user chat: {e}")
             return False
     
-    # Retrieve temp user chat data
     async def get_temp_user_chat(self, user_id: int) -> Optional[Dict]:
-        """
-        Retrieve temp user chat data
-        
-        Args:
-            user_id: Telegram user ID
-        
-        Returns:
-            Chat data or None
-        """
         try:
             temp_collection = await self.get_temp_collection(user_id)
             
@@ -221,58 +151,38 @@ class TempUsersManager:
             return None
             
         except Exception as e:
-            print(f"❌ Error getting temp user chat: {e}")
+            print(f"Error getting temp user chat: {e}")
             return None
     
-    # Clean up old temp user data (2 days retention)
     async def cleanup_temp_users(self, days_old: int = 2):
-        """
-        Clean up old temp user data (2 days for temp users)
-        
-        Args:
-            days_old: Remove temp data older than these days (default: 2 days)
-        """
         try:
             cutoff_date = datetime.utcnow() - timedelta(days=days_old)
             total_cleaned = 0
             
             for collection_name, temp_collection in self.temp_user_collections.items():
-                # Remove old temp data
                 result = await temp_collection.delete_many({
                     "is_temp": True,
                     "last_updated": {"$lt": cutoff_date}
                 })
                 
-                print(f"🧹 Cleaned up {result.deleted_count} temp users from {collection_name}")
+                print(f"Cleaned up {result.deleted_count} temp users from {collection_name}")
                 total_cleaned += result.deleted_count
             
-            print(f"🧹 Total cleaned temp users: {total_cleaned}")
+            print(f"Total cleaned temp users: {total_cleaned}")
         
         except Exception as e:
-            print(f"❌ Error cleaning up temp users: {e}")
+            print(f"Error cleaning up temp users: {e}")
     
-    # Check if message contains dangerous real-life data
     def _is_dangerous_message(self, message: str) -> bool:
-        """
-        Check if message contains dangerous real-life data
-        
-        Args:
-            message: Message content to check
-        
-        Returns:
-            bool: True if message is dangerous
-        """
         if not message:
             return False
             
         message_lower = message.lower()
         
-        # Check for dangerous keywords
         for keyword in self.dangerous_keywords:
             if keyword in message_lower:
                 return True
         
-        # Check for specific dangerous patterns
         dangerous_patterns = [
             'aa rahi hoon', 'meet karte hain', 'milenge',
             '6 baje', '7 baje', '8 baje', 'kal milenge',
@@ -285,14 +195,7 @@ class TempUsersManager:
         
         return False
     
-    # Get statistics about bulk connections and temp users
     async def get_bulk_stats(self) -> Dict:
-        """
-        Get statistics about bulk connections and temp users
-        
-        Returns:
-            Dictionary with bulk processing stats
-        """
         try:
             stats = {
                 "total_public_urls": len(self.public_mongo_urls),
@@ -301,7 +204,6 @@ class TempUsersManager:
                 "connection_names": list(self.bulk_connections.keys())
             }
             
-            # Count temp users in each collection
             for collection_name, collection in self.temp_user_collections.items():
                 count = await collection.count_documents({"is_temp": True})
                 stats[f"temp_users_{collection_name}"] = count
@@ -309,70 +211,38 @@ class TempUsersManager:
             return stats
             
         except Exception as e:
-            print(f"❌ Error getting bulk stats: {e}")
+            print(f"Error getting bulk stats: {e}")
             return {}
     
-    # Close all bulk MongoDB connections
     async def close_all_connections(self):
-        """Close all bulk MongoDB connections"""
         try:
             for connection_name, client in self.bulk_connections.items():
                 client.close()
-                print(f"🔌 Closed connection: {connection_name}")
+                print(f"Closed connection: {connection_name}")
             
             self.bulk_connections.clear()
             self.temp_user_collections.clear()
             
         except Exception as e:
-            print(f"❌ Error closing connections: {e}")
+            print(f"Error closing connections: {e}")
     
-    # User Memory Management Methods
     async def confirm_user_name(self, user_id: int, confirmed_name: str) -> bool:
-        """
-        Confirm and store user's confirmed name
-        
-        Args:
-            user_id: Telegram user ID
-            confirmed_name: User's confirmed name
-        
-        Returns:
-            bool: True if successful
-        """
         try:
             self.user_memories[user_id] = {
                 'confirmed_name': confirmed_name,
                 'name_confirmed_at': datetime.utcnow(),
                 'name_confirmations': 1
             }
-            print(f"✅ Confirmed name for user {user_id}: {confirmed_name}")
+            print(f"Confirmed name for user {user_id}: {confirmed_name}")
             return True
         except Exception as e:
-            print(f"❌ Error confirming user name: {e}")
+            print(f"Error confirming user name: {e}")
             return False
     
     async def get_user_memory(self, user_id: int) -> Optional[Dict]:
-        """
-        Get user's confirmed memory including name
-        
-        Args:
-            user_id: Telegram user ID
-        
-        Returns:
-            User memory dict or None
-        """
         return self.user_memories.get(user_id)
     
     async def check_name_confusion(self, user_id: int, mentioned_name: str) -> bool:
-        """
-        Check if user is getting name confused and needs re-confirmation
-        
-        Args:
-            user_id: Telegram user ID
-            mentioned_name: Name user is mentioning
-        
-        Returns:
-            bool: True if name confusion detected
-        """
         try:
             user_memory = self.user_memories.get(user_id)
             if not user_memory:
@@ -381,29 +251,17 @@ class TempUsersManager:
             confirmed_name = user_memory.get('confirmed_name', '').lower()
             mentioned_name_lower = mentioned_name.lower()
             
-            # If mentioned name is different from confirmed name
             if confirmed_name and mentioned_name_lower != confirmed_name:
-                # Check if this is a significant difference (not just case)
                 if abs(len(confirmed_name) - len(mentioned_name_lower)) > 2:
-                    print(f"🧠 Name confusion detected for user {user_id}: {mentioned_name} vs {confirmed_name}")
+                    print(f"Name confusion detected for user {user_id}: {mentioned_name} vs {confirmed_name}")
                     return True
             
             return False
         except Exception as e:
-            print(f"❌ Error checking name confusion: {e}")
+            print(f"Error checking name confusion: {e}")
             return False
     
     async def handle_name_correction(self, user_id: int, correction_message: str) -> str:
-        """
-        Handle name correction scenarios gracefully
-        
-        Args:
-            user_id: Telegram user ID
-            correction_message: User's correction message
-        
-        Returns:
-            Apology and clarification response
-        """
         try:
             user_memory = self.user_memories.get(user_id)
             confirmed_name = user_memory.get('confirmed_name', '') if user_memory else ''
@@ -419,19 +277,10 @@ class TempUsersManager:
             return random.choice(responses)
             
         except Exception as e:
-            print(f"❌ Error handling name correction: {e}")
+            print(f"Error handling name correction: {e}")
             return "sorry, got confused. tell me again"
     
     async def is_rude_message(self, message: str) -> bool:
-        """
-        Check if message contains rude/insulting content
-        
-        Args:
-            message: Message to check
-        
-        Returns:
-            bool: True if rude content detected
-        """
         if not message:
             return False
         
@@ -445,15 +294,6 @@ class TempUsersManager:
         return any(keyword in message_lower for keyword in rude_keywords)
     
     async def get_rude_response(self, user_id: int) -> str:
-        """
-        Get confident response for rude messages
-        
-        Args:
-            user_id: Telegram user ID
-        
-        Returns:
-            Confident, calm response
-        """
         try:
             user_memory = self.user_memories.get(user_id)
             name = user_memory.get('confirmed_name', '') if user_memory else ''
@@ -475,9 +315,8 @@ class TempUsersManager:
             return random.choice(responses)
             
         except Exception as e:
-            print(f"❌ Error getting rude response: {e}")
+            print(f"Error getting rude response: {e}")
             return "calm down, let's talk normally"
 
 
-# Global instance
 temp_users_manager = TempUsersManager()
