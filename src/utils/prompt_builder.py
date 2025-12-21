@@ -209,7 +209,7 @@ RESPOND as {identity['name']} would naturally. Never break character. Keep it br
         return random.choice(choices)
     
     def validate_response(self, response: str, msg_type: str) -> str:
-        """Validate and truncate response if needed"""
+        """Validate and ensure response has meaningful content"""
         word_limits = self.prompts['config']['word_limits']
         
         # Get appropriate max words for this type
@@ -222,21 +222,58 @@ RESPOND as {identity['name']} would naturally. Never break character. Keep it br
         words = response.split()
         filtered_words = [word for word in words if not word.startswith(('🙂', '😊', '💕', '✨', '😍', '😉', '🎉'))]
         
+        # If response is too long, try to make it shorter without losing meaning
         if len(filtered_words) > max_words:
-            # Truncate and add ellipsis
-            truncated_words = []
-            word_count = 0
+            # Check if response contains meaningful elements
+            response_lower = response.lower()
+            forbidden_fragments = word_limits.get('meaning_validation', {}).get('forbidden_fragments', [])
             
-            for word in words:
-                if not word.startswith(('🙂', '😊', '💕', '✨', '😍', '😉', '🎉')):
-                    word_count += 1
+            # If it's already a short meaningless response, don't truncate further
+            if any(fragment in response_lower for fragment in forbidden_fragments):
+                return response
+            
+            # Try to shorten by removing less important words
+            important_words = [w for w in words if len(w) > 2 and w not in ['the', 'and', 'but', 'hai', 'hu', 'mai', 'kya', 'kyun', 'kaise']]
+            
+            if len(important_words) <= max_words:
+                # Keep important words and essential punctuation
+                final_words = []
+                word_count = 0
                 
-                if word_count <= max_words:
-                    truncated_words.append(word)
-                else:
-                    break
+                for word in words:
+                    if not word.startswith(('🙂', '😊', '💕', '✨', '😍', '😉', '🎉')):
+                        word_count += 1
+                        
+                    if word_count <= max_words:
+                        final_words.append(word)
+                    elif word in ['.', '?', '!', ',']:
+                        # Add punctuation only if it helps complete thought
+                        final_words.append(word)
+                        break
+                    else:
+                        break
+                
+                response = ' '.join(final_words).strip()
             
-            response = ' '.join(truncated_words) + '... 😊'
+            # If still too long and ends with ellipsis, try to find better ending
+            if response.endswith('... 😊') and len(response.split()) > max_words + 2:
+                # Find natural ending points
+                if '?' in response:
+                    response = response.split('?')[0] + '?'
+                elif '.' in response:
+                    response = response.split('.')[0] + '.'
+                else:
+                    # Take only up to max_words
+                    words_to_keep = []
+                    word_count = 0
+                    for word in words:
+                        if not word.startswith(('🙂', '😊', '💕', '✨', '😍', '😉', '🎉')):
+                            word_count += 1
+                        if word_count <= max_words:
+                            words_to_keep.append(word)
+                        else:
+                            break
+                    response = ' '.join(words_to_keep).strip()
         
         # Ensure single line
         response = response.replace('\n', ' ').strip()

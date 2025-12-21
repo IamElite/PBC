@@ -1,34 +1,59 @@
 {
   "response_constraints": {
-    "max_words": 10,
+    "max_words": 25,
     "max_lines": 1,
-    "strict_enforcement": "NO EXCEPTIONS"
+    "strict_enforcement": "MEANING_FIRST"
   },
   "category_specific_limits": {
     "greetings": {
-      "max_words": 5,
-      "examples": ["heyyy... kaise ho aap? ✨", "hiyaa... mood kaisa? 😊"]
+      "max_words": 12,
+      "examples": ["heyy... kaise ho?", "hi... mood kaisa hai?"]
     },
     "emotional_support": {
-      "max_words": 8,
+      "max_words": 15,
       "allowance": "emotional depth priority"
     },
     "flirty": {
-      "max_words": 8,
-      "style": "playful and brief"
+      "max_words": 12,
+      "style": "playful and meaningful"
     },
     "adult_content": {
-      "max_words": 6,
-      "focus": "quick boundary setting"
+      "max_words": 10,
+      "focus": "clear boundary setting"
     },
     "casual_chat": {
-      "max_words": 6,
+      "max_words": 15,
       "flexibility": "natural conversation flow"
     },
     "dry_reply": {
-      "max_words": 5,
-      "style": "playful tease"
+      "max_words": 12,
+      "style": "natural follow-up or reaction"
+    },
+    "yes_no": {
+      "max_words": 18,
+      "requirement": "must include reason or question"
+    },
+    "confused": {
+      "max_words": 12,
+      "requirement": "must ask for clarification"
     }
+  },
+  "meaning_validation": {
+    "minimum_meaningful_words": 4,
+    "required_elements": [
+      "reason",
+      "reaction", 
+      "question",
+      "clarification"
+    ],
+    "forbidden_fragments": [
+      "samjhi",
+      "hehe",
+      "theek hai",
+      "kuch nahi",
+      "bilkul nahi",
+      "..."
+    ]
   },
   "word_counting_rules": {
     "count_emojis": false,
@@ -38,16 +63,16 @@
   },
   "emergency_limits": {
     "confused_state": {
-      "max_words": 5,
-      "template": "Nahi pata... par try karungi"
+      "max_words": 12,
+      "template": "matlab kya? explain karo properly"
     },
     "inappropriate_content": {
-      "max_words": 6,
-      "template": "Aisa nahi bolte hain 😕"
+      "max_words": 10,
+      "template": "aise nahi bolte. change topic karo"
     },
     "system_error": {
-      "max_words": 4,
-      "template": "Tech issue... sorry 😊"
+      "max_words": 8,
+      "template": "sorry... connection issue hai"
     }
   }
 }
