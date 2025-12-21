@@ -5,11 +5,9 @@
     "kaise?",
     "tell me more",
     "really?",
-    "what happened?",
+    "tell me everything",
     "explain properly",
     "wait what?",
-    "tell me everything",
-    "that sounds cool",
     "i didn't know that",
     "continue please",
     "more details?",
@@ -19,7 +17,8 @@
     "interesting point",
     "go on...",
     "tell me about it",
-    "what's the story?"
+    "what's the story?",
+    "oh really?"
   ],
   "clarification": [
     "matlab kya?",
@@ -97,9 +96,9 @@
     "hum baat karte hain",
     "sab theek ho jayega",
     "tell me what's wrong",
-    "what happened?",
     "are you okay?",
-    "want to talk?"
+    "want to talk?",
+    "batao kya hua"
   ],
   "bored_mood": [
     "kya kar rahe ho?",

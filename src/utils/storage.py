@@ -58,6 +58,9 @@ class TempUsersManager:
         self.bulk_connections = {}  # Store multiple MongoDB connections
         self.temp_user_collections = {}  # Store temp user collections
         
+        # User memory tracking
+        self.user_memories = {}  # Store user name confirmations and memory
+        
         # Safety keywords to detect real-life data
         self.dangerous_keywords = [
             'meet', 'meeting', 'milna', 'aaunga', 'aa rahi hoon',
@@ -322,6 +325,158 @@ class TempUsersManager:
             
         except Exception as e:
             print(f"❌ Error closing connections: {e}")
+    
+    # User Memory Management Methods
+    async def confirm_user_name(self, user_id: int, confirmed_name: str) -> bool:
+        """
+        Confirm and store user's confirmed name
+        
+        Args:
+            user_id: Telegram user ID
+            confirmed_name: User's confirmed name
+        
+        Returns:
+            bool: True if successful
+        """
+        try:
+            self.user_memories[user_id] = {
+                'confirmed_name': confirmed_name,
+                'name_confirmed_at': datetime.utcnow(),
+                'name_confirmations': 1
+            }
+            print(f"✅ Confirmed name for user {user_id}: {confirmed_name}")
+            return True
+        except Exception as e:
+            print(f"❌ Error confirming user name: {e}")
+            return False
+    
+    async def get_user_memory(self, user_id: int) -> Optional[Dict]:
+        """
+        Get user's confirmed memory including name
+        
+        Args:
+            user_id: Telegram user ID
+        
+        Returns:
+            User memory dict or None
+        """
+        return self.user_memories.get(user_id)
+    
+    async def check_name_confusion(self, user_id: int, mentioned_name: str) -> bool:
+        """
+        Check if user is getting name confused and needs re-confirmation
+        
+        Args:
+            user_id: Telegram user ID
+            mentioned_name: Name user is mentioning
+        
+        Returns:
+            bool: True if name confusion detected
+        """
+        try:
+            user_memory = self.user_memories.get(user_id)
+            if not user_memory:
+                return False
+            
+            confirmed_name = user_memory.get('confirmed_name', '').lower()
+            mentioned_name_lower = mentioned_name.lower()
+            
+            # If mentioned name is different from confirmed name
+            if confirmed_name and mentioned_name_lower != confirmed_name:
+                # Check if this is a significant difference (not just case)
+                if abs(len(confirmed_name) - len(mentioned_name_lower)) > 2:
+                    print(f"🧠 Name confusion detected for user {user_id}: {mentioned_name} vs {confirmed_name}")
+                    return True
+            
+            return False
+        except Exception as e:
+            print(f"❌ Error checking name confusion: {e}")
+            return False
+    
+    async def handle_name_correction(self, user_id: int, correction_message: str) -> str:
+        """
+        Handle name correction scenarios gracefully
+        
+        Args:
+            user_id: Telegram user ID
+            correction_message: User's correction message
+        
+        Returns:
+            Apology and clarification response
+        """
+        try:
+            user_memory = self.user_memories.get(user_id)
+            confirmed_name = user_memory.get('confirmed_name', '') if user_memory else ''
+            
+            responses = [
+                f"sorry {confirmed_name}, got confused for a moment",
+                f"oops {confirmed_name}, my bad",
+                f"sorry {confirmed_name}, tell me again properly",
+                f"{confirmed_name}, explain once more please"
+            ]
+            
+            import random
+            return random.choice(responses)
+            
+        except Exception as e:
+            print(f"❌ Error handling name correction: {e}")
+            return "sorry, got confused. tell me again"
+    
+    async def is_rude_message(self, message: str) -> bool:
+        """
+        Check if message contains rude/insulting content
+        
+        Args:
+            message: Message to check
+        
+        Returns:
+            bool: True if rude content detected
+        """
+        if not message:
+            return False
+        
+        rude_keywords = [
+            'bakwas', 'chutiya', 'madarchod', 'bc', 'mc', 'gaand', 'laude',
+            'gandu', 'kutta', 'kutte', 'rat', 'harami', 'fuck', 'shit',
+            'bitch', 'asshole', 'idiot', 'stupid', 'dumb', 'psycho'
+        ]
+        
+        message_lower = message.lower()
+        return any(keyword in message_lower for keyword in rude_keywords)
+    
+    async def get_rude_response(self, user_id: int) -> str:
+        """
+        Get confident response for rude messages
+        
+        Args:
+            user_id: Telegram user ID
+        
+        Returns:
+            Confident, calm response
+        """
+        try:
+            user_memory = self.user_memories.get(user_id)
+            name = user_memory.get('confirmed_name', '') if user_memory else ''
+            
+            responses = [
+                f"{name}, relax a bit",
+                f"{name}, calm down",
+                f"{name}, what's your problem?",
+                f"{name}, why so serious?",
+                f"{name}, no need to be rude",
+                f"{name}, let's talk normally",
+                "why you talking like this?",
+                "calm down, what's wrong?",
+                "no need to be aggressive",
+                "let's talk properly"
+            ]
+            
+            import random
+            return random.choice(responses)
+            
+        except Exception as e:
+            print(f"❌ Error getting rude response: {e}")
+            return "calm down, let's talk normally"
 
 
 # Global instance

@@ -54,6 +54,8 @@
       "bilkul...",
       "accha...",
       "interesting...",
+      "what happened?",
+      "that sounds cool",
       "continue karo",
       "aur batao",
       "kya kar rahe ho?",
@@ -66,7 +68,12 @@
       "ok that's interesting",
       "tell me more",
       "kuch nahi",
-      "bilkul nahi"
+      "bilkul nahi",
+      "empty fillers",
+      "random english",
+      "over-sweet",
+      "over-hehe",
+      "over-lol"
     ]
   },
   "word_counting_rules": {

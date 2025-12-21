@@ -94,6 +94,77 @@ class PromptBuilder:
         
         return 'neutral'
     
+    async def check_name_confirmation_needed(self, message: str, user_id: int) -> tuple:
+        """
+        Check if user name confirmation is needed
+        
+        Args:
+            message: User message
+            user_id: User ID
+        
+        Returns:
+            tuple: (needs_confirmation, correction_needed, response)
+        """
+        try:
+            # Check for name-related messages
+            message_lower = message.lower()
+            
+            # Patterns that indicate name confusion
+            name_confusion_patterns = [
+                'kya naam hai', 'naam kya hai', 'who is this', 'kon hai',
+                'tum kaun ho', 'what is your name', 'your name'
+            ]
+            
+            # Check if user is asking about name
+            if any(pattern in message_lower for pattern in name_confusion_patterns):
+                # Check if we have confirmed name
+                user_memory = temp_users_manager.user_memories.get(user_id)
+                if user_memory and user_memory.get('confirmed_name'):
+                    confirmed_name = user_memory['confirmed_name']
+                    return True, False, f"you're {confirmed_name}, right?"
+                else:
+                    return True, False, None
+            
+            # Check if user is correcting name confusion
+            correction_patterns = [
+                'naam nahi hai', 'name nahi hai', 'galat naam',
+                'wrong name', 'not my name', 'mai nahi hu'
+            ]
+            
+            if any(pattern in message_lower for pattern in correction_patterns):
+                # Get current memory
+                user_memory = await temp_users_manager.get_user_memory(user_id)
+                if user_memory:
+                    response = await temp_users_manager.handle_name_correction(user_id, message)
+                    return False, True, response
+            
+            return False, False, None
+            
+        except Exception as e:
+            print(f"Error checking name confirmation: {e}")
+            return False, False, None
+    
+    async def detect_rude_message(self, message: str, user_id: int) -> tuple:
+        """
+        Detect rude messages and return appropriate response
+        
+        Args:
+            message: User message
+            user_id: User ID
+        
+        Returns:
+            tuple: (is_rude, response)
+        """
+        try:
+            is_rude = await temp_users_manager.is_rude_message(message)
+            if is_rude:
+                response = await temp_users_manager.get_rude_response(user_id)
+                return True, response
+            return False, None
+        except Exception as e:
+            print(f"Error detecting rude message: {e}")
+            return False, None
+    
     # NEW: Chat History Integration Methods
     async def process_user_message(self, user_id: int, message: str) -> tuple:
         """
@@ -213,6 +284,33 @@ CRITICAL RULES:
 Current mood matching: {mood_matching['response_matching'][f'user_{mood}']['energy_level'] if f'user_{mood}' in mood_matching['response_matching'] else 'neutral'}.
 
 RESPOND as {identity['name']} would naturally. Never break character. Keep it brief and natural."""
+        
+        # Add memory and name handling rules
+        system_prompt += """
+
+MEMORY RULES:
+- Remember user's confirmed name once established
+- If name confusion occurs, apologize politely and re-confirm
+- Never randomly assume different names
+- Handle "what's my name?" type questions naturally
+
+RESPONSE STRUCTURE:
+- Every reply must have: (short reaction/answer) + (simple follow-up question)
+- NO one-word or random responses
+- NO "samjhi...", "what happened?", "that sounds cool"
+- NO empty fillers or random English jumps
+
+GIRL VIBE:
+- Natural, confident, slightly playful tone
+- Not over-sweet, over-hehe, or over-lol
+- Sound like real ladki, not AI
+- Show calm confidence, not victim mentality
+
+RUDE MESSAGE HANDLING:
+- If user is rude/insulting, respond with light attitude + calm confidence
+- Never be defensive, dumb, or confused
+- Examples: "relax a bit", "calm down", "what's your problem?"
+- Then naturally redirect conversation"""
         
         return system_prompt
     

@@ -54,6 +54,35 @@ class era:
         self.add_message(user_id, chat_id, "user", message)
         chat_history = self.get_chat(user_id, chat_id)
         
+        # 🔥 CHECK FOR SPECIAL CASES FIRST!
+        try:
+            # Check for rude messages
+            is_rude, rude_response = await prompt_builder.detect_rude_message(message, user_id)
+            if is_rude and rude_response:
+                print(f"🛡️ Rude message detected from user {user_id}, responding confidently")
+                return rude_response
+            
+            # Check for name confusion
+            needs_name_confirm, needs_correction, name_response = await prompt_builder.check_name_confirmation_needed(message, user_id)
+            if needs_correction and name_response:
+                print(f"🧠 Name correction handled for user {user_id}")
+                return name_response
+            
+            # Handle name confirmation if user provides their name
+            if user_name and not needs_name_confirm and not needs_correction:
+                # Check if this looks like a name confirmation
+                name_patterns = ['mai', 'main', 'i am', 'i\'m', 'mera naam', 'my name is']
+                if any(pattern in message.lower() for pattern in name_patterns):
+                    # Confirm the name
+                    await temp_users_manager.confirm_user_name(user_id, user_name)
+                    print(f"✅ Confirmed name for user {user_id}: {user_name}")
+                    
+                    # Return name confirmation response
+                    return f"nice to meet you {user_name}"
+                
+        except Exception as e:
+            print(f"⚠️ Special case handling failed: {e}")
+        
         # 🔥 DYNAMIC PROMPT BUILDING - Using new modular system!
         try:
             system_prompt = prompt_builder.build_system_prompt(
