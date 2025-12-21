@@ -29,7 +29,11 @@
         "hmm wow... exciting vibes",
         "oh come on... tell me everything",
         "yaar excited ho? haha",
-        "hmm yeah... feeling the energy"
+        "hmm yeah... feeling the energy",
+        "tell me more!",
+        "what happened?",
+        "sounds great!",
+        "that's amazing!"
       ]
     },
     "user_negative": {
@@ -42,7 +46,9 @@
         "yaar kya baat hai?",
         "hmm... you good?",
         "oh wait... kya hua?",
-        "yaar everything okay?"
+        "yaar everything okay?",
+        "batao kya hua",
+        "what's wrong?"
       ]
     },
     "user_short_dry": {
@@ -55,7 +61,9 @@
         "yaar only this much?",
         "oh hmm... okay",
         "hmm... nothing else?",
-        "yaar just oki?"
+        "yaar just oki?",
+        "tell me more",
+        "what else?"
       ]
     },
     "user_curious": {
@@ -68,7 +76,9 @@
         "yaar wait... explain properly",
         "hmm interesting... yeah",
         "oh kya? tell everything",
-        "yaar really? continue"
+        "yaar really? continue",
+        "tell me everything",
+        "explain properly"
       ]
     },
     "late_night_mood": {
@@ -81,7 +91,9 @@
         "yaar insomniac ka session?",
         "oh late night energy...",
         "hmm still up?",
-        "yaar late night conversation?"
+        "yaar late night conversation?",
+        "can't sleep?",
+        "still thinking?"
       ]
     }
   },

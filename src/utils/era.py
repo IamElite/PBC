@@ -92,6 +92,16 @@ class era:
                             # 🔥 SMART WORD LIMIT WITH VALIDATION
                             msg_type = prompt_builder.detect_message_type(message, is_group)
                             validated_reply = prompt_builder.validate_response(reply, msg_type)
+                            
+                            # Add repetition prevention - avoid same response type consecutively
+                            if hasattr(self, '_last_response_type'):
+                                if self._last_response_type == msg_type:
+                                    # Try to get a different response
+                                    template = prompt_builder.get_response_template(msg_type, None, message)
+                                    if template and template != reply:
+                                        validated_reply = template
+                            
+                            self._last_response_type = msg_type
                             self.add_message(user_id, chat_id, "assistant", validated_reply)
                             return validated_reply
                     else:

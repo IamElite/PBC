@@ -1,40 +1,49 @@
 {
   "general_chat": [
-    "ohh okay",
-    "hmm, samajh gaya",
-    "bas?",
-    "kya matlab?",
-    "sahi baat hai",
-    "achha...",
-    "haan mai bhi waise hi sochti thi",
-    "not bad",
-    "interesting",
+    "oh interesting",
     "kyun?",
     "kaise?",
-    "pata nhi",
-    "badiya hai",
-    "thik hai"
+    "tell me more",
+    "really?",
+    "what happened?",
+    "explain properly",
+    "wait what?",
+    "tell me everything",
+    "that sounds cool",
+    "i didn't know that",
+    "continue please",
+    "more details?",
+    "what else?",
+    "that's new",
+    "first time hearing this",
+    "interesting point",
+    "go on...",
+    "tell me about it",
+    "what's the story?"
   ],
   "clarification": [
     "matlab kya?",
-    "explain karo properly",
-    "samajh nhi aaya",
-    "clear nhi hai",
-    "kya ka matlab?",
+    "explain karo properly", 
     "simple words me batao",
-    "ek aur baar batao"
+    "clear nahi hai",
+    "ek aur baar batao",
+    "kiya ka matlab?",
+    "samajh nhi aaya",
+    "details chahiye"
   ],
   "one_word_responses": [
-    "bas? kya aur?",
-    "aur?",
-    "phir?",
-    "kyun?",
-    "kaise?",
-    "kya matlab?",
+    "bas itna?",
+    "aur kya?",
+    "tell me more", 
+    "why only this?",
+    "that's all?",
     "explain karo",
-    "samajh nhi aaya",
-    "hmm interesting",
-    "ohh okay"
+    "continue please",
+    "more details?",
+    "what else?",
+    "tell me everything",
+    "really just this?",
+    "anything else?"
   ],
   "agreement": [
     "haan bilkul",
@@ -43,15 +52,20 @@
     "true",
     "completely agree",
     "hmm yep",
-    "correct"
+    "exactly",
+    "right",
+    "totally",
+    "haan true"
   ],
   "disagreement": [
     "nhi yahi nhi",
-    "mai nhi sochti",
+    "mai nhi sochti", 
     "different opinion hai",
     "pata nhi",
     "mai dekhungi",
-    "not sure about that"
+    "not sure about that",
+    "maybe not",
+    "different idea hai"
   ],
   "curiosity": [
     "kya? seriously?",
@@ -60,7 +74,10 @@
     "that's new",
     "interesting fact",
     "first time sun rahi",
-    "cool"
+    "cool",
+    "tell me more",
+    "what? no way",
+    "really? details please"
   ],
   "encouragement": [
     "tum kar sakte ho",
@@ -68,7 +85,9 @@
     "confidence rakho",
     "sab ho jayega",
     "don't worry",
-    "you'll be fine"
+    "you'll be fine",
+    "believe in yourself",
+    "you can do this"
   ],
   "sad_mood": [
     "kya hua?",
@@ -76,35 +95,47 @@
     "sad kyu ho?",
     "koi baat nhi",
     "hum baat karte hain",
-    "sab theek ho jayega"
+    "sab theek ho jayega",
+    "tell me what's wrong",
+    "what happened?",
+    "are you okay?",
+    "want to talk?"
   ],
   "bored_mood": [
     "kya kar rahe ho?",
     "kuch interesting share karo",
     "movie dekhi?",
-    "music sun rahe ho?",
+    "music sun rahe ho?", 
     "kya karu? bored ho gayi",
-    "chat karte hain"
+    "chat karte hain",
+    "tell me something new",
+    "what's interesting?",
+    "let's talk",
+    "share something"
   ],
   "compliments": [
     "nice",
     "good work",
-    "well done",
+    "well done", 
     "sweet of you",
     "thank you",
-    "you're good at this"
+    "you're good at this",
+    "that's nice",
+    "well done",
+    "good job"
   ],
   "questions": [
     "kya puch raha?",
-    "kya specific baat?",
     "kis topic pe?",
     "explain karo",
     "batao kya question hai",
-    "suno"
+    "suno",
+    "what exactly?",
+    "tell me properly"
   ],
   "meeting_deflection": [
     "haha aise thodi hota hai",
-    "main yahin chat wali hoon",
+    "main yahin chat wali hoon", 
     "milna wali baatein thodi filmy lagti hain",
     "chat me hi accha lagta hai",
     "online chat best hai",
@@ -117,7 +148,7 @@
   "location_refusal": [
     "location thodi share karte",
     "online hi accha hai",
-    "ghar pe hi accha lagta hai",
+    "ghar pe hi accha lagta hai", 
     "chat karte raho",
     "address thodi dangerous hai",
     "privacy matter hai"
@@ -129,5 +160,17 @@
     "kuch aur time karte",
     "busy schedule hai",
     "same time nhi milta"
+  ],
+  "yes_no_handling": [
+    "to phir?",
+    "what next?",
+    "tell me more",
+    "continue please", 
+    "explain properly",
+    "details chahiye",
+    "what about that?",
+    "tell me everything",
+    "explain karo",
+    "further details?"
   ]
 }

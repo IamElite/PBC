@@ -46,9 +46,9 @@ class PromptBuilder:
         if any(keyword in message_lower for keyword in user_identity_keywords):
             return 'user_identity'
         
-        # Dry Reply detection (enhanced with 'sahi')
-        dry_keywords = ['ok', 'hmm', 'acha', 'thik', 'han', 'yes', 'no', 'k', 'sahi']
-        if len(message.split()) < 3 and any(word in message_lower for word in dry_keywords):
+        # One-word/dry reply detection
+        one_word_keywords = ['ok', 'hmm', 'acha', 'thik', 'han', 'yes', 'no', 'k', 'sahi', 'hn', 'nhi']
+        if len(message.split()) <= 2 and any(word in message_lower for word in one_word_keywords):
             return 'dry_reply'
         
         # Greeting detection
@@ -196,7 +196,7 @@ BOT IDENTITY: Respond with: 'Pixel hoon, aapki sweet friend 😊' - Do NOT ask a
         elif is_short_input:
             system_prompt += """
 
-SHORT INPUT HANDLING: If the user input is short (less than 3 words like 'ok', 'hmm', 'acha'), the Response must be a playful statement or tease. DO NOT ask a generic question like "kya kar rahe ho". Just acknowledge nicely. Example: 'samjhi... 😊' or 'theek hai 😊'."""
+ONE-WORD INPUT HANDLING: If user says 'yes/haan/han', respond with 'phir kya?' or 'tell me more'. If user says 'no/nahi/nhi', respond with 'kyun?' or 'what happened?'. If user says 'hmm/ok/thik', respond with follow-up questions. NEVER give blank acknowledgments like 'ok' or 'samjhi'."""
         
         # CRITICAL: Strict No-Question & No-Advice Rule
         system_prompt += """
@@ -216,7 +216,7 @@ RESPOND as {identity['name']} would naturally. Never break character. Keep it br
         
         return system_prompt
     
-    def get_response_template(self, msg_type: str, mood: str = None) -> str:
+    def get_response_template(self, msg_type: str, mood: str = None, user_message: str = None) -> str:
         """Get a random response template based on type and mood"""
         original_msg_type = msg_type  # Remember original type for dry_reply logic
         
@@ -225,21 +225,27 @@ RESPOND as {identity['name']} would naturally. Never break character. Keep it br
         
         templates = self.prompts['responses'][msg_type]
         
-        # Get appropriate sub-category based on mood
-        if mood == 'negative' and 'empathy' in templates:
-            choices = templates['empathy']
-        elif mood == 'excited' and 'celebration' in templates:
-            choices = templates['celebration']
+        # Get appropriate sub-category based on mood and message type
+        if mood == 'negative' and 'sad_mood' in templates:
+            choices = templates['sad_mood']
+        elif mood == 'excited' and 'excited_mood' in templates:
+            choices = templates['excited_mood']
         elif original_msg_type == 'greetings':
             choices = templates.get('hello', list(templates.values())[0])
         elif original_msg_type == 'dry_reply':
-            # For dry replies, use casual templates and pick one_word_responses sub-category
-            if 'one_word_responses' in templates:
-                choices = templates['one_word_responses']
-            elif 'curiosity' in templates:
-                choices = templates['curiosity']
+            # Enhanced one-word handling
+            user_lower = user_message.lower() if user_message else ""
+            
+            # Check for specific one-word responses
+            if any(word in user_lower for word in ['yes', 'haan', 'han', 'hn']):
+                choices = templates.get('yes_no_handling', templates.get('one_word_responses', templates.get('curiosity', templates.get('general_chat', list(templates.values())[0]))))
+            elif any(word in user_lower for word in ['no', 'nahi', 'nhi']):
+                choices = templates.get('yes_no_handling', templates.get('one_word_responses', templates.get('curiosity', templates.get('general_chat', list(templates.values())[0]))))
+            elif any(word in user_lower for word in ['hmm', 'ok', 'thik', 'acha']):
+                choices = templates.get('one_word_responses', templates.get('curiosity', templates.get('general_chat', list(templates.values())[0])))
             else:
-                choices = templates.get('general_chat', list(templates.values())[0])
+                # Default for other dry replies
+                choices = templates.get('one_word_responses', templates.get('curiosity', templates.get('general_chat', list(templates.values())[0])))
         else:
             # Get first available category
             first_key = list(templates.keys())[0]

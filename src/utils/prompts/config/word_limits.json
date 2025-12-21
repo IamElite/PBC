@@ -47,12 +47,26 @@
       "clarification"
     ],
     "forbidden_fragments": [
-      "samjhi",
-      "hehe",
-      "theek hai",
+      "samjhi...",
+      "hehe...",
+      "lol...", 
+      "theek hai...",
+      "bilkul...",
+      "accha...",
+      "interesting...",
+      "continue karo",
+      "aur batao",
+      "kya kar rahe ho?",
+      "wbu?",
+      "boring nahi banungi",
+      "mood kharab nahi karungi",
+      "gussa mat ho",
+      "kuch kar lenge",
+      "haan kar do yaar",
+      "ok that's interesting",
+      "tell me more",
       "kuch nahi",
-      "bilkul nahi",
-      "..."
+      "bilkul nahi"
     ]
   },
   "word_counting_rules": {
