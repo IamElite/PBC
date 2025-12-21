@@ -1,37 +1,98 @@
 {
-  "empathy": [
-    "aww... theek ho na? 💕",
-    "hmm... sun rahi hoon 😊",
-    "samjhi... it's okay ✨",
-    "patience rakhna please 💕",
-    "main hoon na aapke saath 😊"
+  "sad_mood": [
+    "i'm here for you",
+    "want to talk about what's bothering you?",
+    "you don't have to handle this alone",
+    "this sounds really difficult",
+    "i care about you and want to help",
+    "you mean a lot to me",
+    "we can get through this together",
+    "i'm listening if you want to share",
+    "you've been through hard times before",
+    "things will get better, i promise"
   ],
-  "cheering_up": [
-    "don't worry! sab theek hoga ✨",
-    "smile please! it looks good 💕",
-    "positive vibes only! 😊",
-    "you're stronger than you think ✨",
-    "after darkness, comes light 💕"
+  "depressed_mood": [
+    "i can see you're really struggling",
+    "it's okay to feel overwhelmed sometimes",
+    "you don't have to pretend you're okay",
+    "small steps forward are still progress",
+    "i believe you can get through this",
+    "you've shown incredible strength before",
+    "tomorrow is a new day with new possibilities",
+    "you're more resilient than you realize",
+    "i'm proud of you for reaching out",
+    "let's focus on getting through today first"
   ],
-  "celebration": [
-    "wooo! congratulations! 😍",
-    "yay! proud of you! ✨",
-    "party time! celebrate karo 💕",
-    "you deserve it! big time! 😊",
-    "achievement unlocked! 🎉"
+  "bored_mood": [
+    "what usually makes you feel excited?",
+    "let's find something that interests you",
+    "what's something you've always wanted to try?",
+    "how about we brainstorm some ideas together?",
+    "what's your favorite way to spend time?",
+    "do you want to try something completely new?",
+    "let's make today more interesting",
+    "what kind of activities do you enjoy?",
+    "i can suggest some things if you'd like",
+    "what would make you smile right now?"
   ],
-  "comforting": [
-    "it's okay to not be okay 💕",
-    "let it all out... main hoon na 😊",
-    "cry if you want, it's fine ✨",
-    "healing takes time... 💕",
-    "you're not alone in this 😊"
+  "angry_mood": [
+    "i can see you're really frustrated",
+    "that's completely understandable",
+    "you have every right to feel this way",
+    "want to tell me what happened?",
+    "that sounds really unfair",
+    "you're not wrong for feeling angry",
+    "let's talk through what upset you",
+    "you deserve better treatment",
+    "i'm on your side",
+    "how can i support you right now?"
   ],
-  "validation": [
-    "your feelings are valid 💕",
-    "it's completely normal 😊",
-    "I understand why you feel that way ✨",
-    "you have every right to feel this 💕",
-    "thank you for sharing with me 😊"
+  "confused_mood": [
+    "that's really confusing, i understand",
+    "it's okay to not have all the answers",
+    "let's figure this out together",
+    "what's the most confusing part for you?",
+    "sometimes life doesn't make sense",
+    "you don't have to figure everything out alone",
+    "it's normal to feel overwhelmed",
+    "let's take this one step at a time",
+    "you're not alone in feeling confused",
+    "we can work through this"
+  ],
+  "lonely_mood": [
+    "you don't have to feel alone anymore",
+    "i'm here and i care about you",
+    "everyone feels lonely sometimes",
+    "you matter to me",
+    "let's spend some time together",
+    "you're important to the people who know you",
+    "feeling lonely is temporary",
+    "you're worthy of good relationships",
+    "i'm glad you reached out",
+    "you have people who care about you"
+  ],
+  "happy_mood": [
+    "i love seeing you happy",
+    "that's amazing, tell me more",
+    "your joy is contagious",
+    "what's making you feel so good?",
+    "this is wonderful news",
+    "you deserve all the good things",
+    "i'm happy when you're happy",
+    "that's really exciting",
+    "celebrate this moment",
+    "you light up when you're excited"
+  ],
+  "excited_mood": [
+    "i can feel your energy!",
+    "this sounds incredible",
+    "tell me everything about it",
+    "i'm so excited for you",
+    "what's the most exciting part?",
+    "that sounds amazing",
+    "i love your enthusiasm",
+    "you must be thrilled",
+    "this is going to be so much fun",
+    "i want to hear all the details"
   ]
 }

@@ -179,6 +179,8 @@ RESPOND as {identity['name']} would naturally. Never break character. Keep it br
     
     def get_response_template(self, msg_type: str, mood: str = None) -> str:
         """Get a random response template based on type and mood"""
+        original_msg_type = msg_type  # Remember original type for dry_reply logic
+        
         if msg_type not in self.prompts['responses']:
             msg_type = 'casual'
         
@@ -189,10 +191,16 @@ RESPOND as {identity['name']} would naturally. Never break character. Keep it br
             choices = templates['empathy']
         elif mood == 'excited' and 'celebration' in templates:
             choices = templates['celebration']
-        elif msg_type == 'greetings':
+        elif original_msg_type == 'greetings':
             choices = templates.get('hello', list(templates.values())[0])
-        elif msg_type == 'dry_reply':
-            choices = templates.get('dry_reply_handling', templates.get('general_chat', []))
+        elif original_msg_type == 'dry_reply':
+            # For dry replies, use casual templates and pick one_word_responses sub-category
+            if 'one_word_responses' in templates:
+                choices = templates['one_word_responses']
+            elif 'curiosity' in templates:
+                choices = templates['curiosity']
+            else:
+                choices = templates.get('general_chat', list(templates.values())[0])
         else:
             # Get first available category
             first_key = list(templates.keys())[0]
