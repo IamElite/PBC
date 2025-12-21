@@ -8,6 +8,8 @@ MongoDB-based chat history management with:
 - Auto cleanup of old history
 - Conversation consistency
 - Safety checks for real-life data
+- BULK MONGO URLS HANDLING for temp users
+- Multiple database connections support
 
 Author: AI Backend Engineer
 """
@@ -17,15 +19,20 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Tuple
 import config
 from src.database import usersdb
+from motor.motor_asyncio import AsyncIOMotorClient
 
 
 class ChatHistoryManager:
-    """MongoDB-based chat history management system"""
+    """MongoDB-based chat history management system with bulk processing"""
     
     def __init__(self):
         """Initialize with database connection"""
         self.history_retention_days = config.CHAT_HISTORY_DAYS
         self.collection = usersdb  # Using existing usersdb for simplicity
+        
+        # BULK: Multiple Mongo connections for temp users
+        self.bulk_connections = {}  # Store multiple MongoDB connections
+        self.temp_user_collections = {}  # Store temp user collections
         
         # Safety keywords to detect real-life data
         self.dangerous_keywords = [
@@ -34,6 +41,130 @@ class ChatHistoryManager:
             'time', 'baje', '6 baje', '7 baje', '8 baje',
             'tomorrow', 'kal', 'day', 'date', 'place'
         ]
+    
+    # NEW: Bulk Mongo URL handling methods
+    async def add_bulk_mongo_urls(self, mongo_urls: List[str]):
+        """
+        Add multiple MongoDB URLs for temp users
+        
+        Args:
+            mongo_urls: List of MongoDB connection URLs
+        """
+        try:
+            for i, mongo_url in enumerate(mongo_urls):
+                connection_name = f"temp_db_{i+1}"
+                
+                # Create new connection for temp users
+                temp_client = AsyncIOMotorClient(mongo_url)
+                temp_db = temp_client["temp_chat_data"]
+                temp_collection = temp_db["temp_users"]
+                
+                self.bulk_connections[connection_name] = temp_client
+                self.temp_user_collections[connection_name] = temp_collection
+                
+                print(f"✅ Added temp Mongo connection: {connection_name}")
+            
+            print(f"🗄️ Total bulk connections: {len(self.bulk_connections)}")
+            
+        except Exception as e:
+            print(f"❌ Error adding bulk Mongo URLs: {e}")
+    
+    async def get_temp_collection(self, user_id: int):
+        """
+        Get appropriate temp collection for a user based on user_id hash
+        
+        Args:
+            user_id: Telegram user ID
+        
+        Returns:
+            Collection object for temp storage
+        """
+        # Hash user_id to distribute across temp collections
+        collection_index = user_id % len(self.temp_user_collections)
+        collection_names = list(self.temp_user_collections.keys())
+        collection_name = collection_names[collection_index]
+        
+        return self.temp_user_collections[collection_name]
+    
+    async def store_temp_user_chat(self, user_id: int, username: str, chat_data: Dict):
+        """
+        Store temp user chat data in bulk Mongo connections
+        
+        Args:
+            user_id: Telegram user ID
+            username: User's username
+            chat_data: Complete chat data to store
+        """
+        try:
+            # Get appropriate temp collection
+            temp_collection = await self.get_temp_collection(user_id)
+            
+            # Prepare temp user data
+            temp_user_data = {
+                "user_id": user_id,
+                "username": username,
+                "chat_data": chat_data,
+                "created_at": datetime.utcnow(),
+                "last_updated": datetime.utcnow(),
+                "is_temp": True  # Mark as temporary data
+            }
+            
+            # Store in temp collection (upsert)
+            await temp_collection.update_one(
+                {"user_id": user_id},
+                {"$set": temp_user_data},
+                upsert=True
+            )
+            
+            print(f"📦 Stored temp chat data for user {user_id} ({username})")
+            
+        except Exception as e:
+            print(f"❌ Error storing temp user chat: {e}")
+    
+    async def get_temp_user_chat(self, user_id: int) -> Optional[Dict]:
+        """
+        Retrieve temp user chat data
+        
+        Args:
+            user_id: Telegram user ID
+        
+        Returns:
+            Chat data or None
+        """
+        try:
+            temp_collection = await self.get_temp_collection(user_id)
+            
+            temp_user = await temp_collection.find_one({"user_id": user_id})
+            if temp_user and temp_user.get("is_temp"):
+                return temp_user.get("chat_data")
+            
+            return None
+            
+        except Exception as e:
+            print(f"❌ Error getting temp user chat: {e}")
+            return None
+    
+    async def cleanup_temp_users(self, days_old: int = 7):
+        """
+        Clean up old temp user data
+        
+        Args:
+            days_old: Remove temp data older than these days
+        """
+        try:
+            cutoff_date = datetime.utcnow() - timedelta(days=days_old)
+            
+            for collection_name, temp_collection in self.temp_user_collections.items():
+                # Remove old temp data
+                result = await temp_collection.delete_many({
+                    "is_temp": True,
+                    "last_updated": {"$lt": cutoff_date}
+                })
+                
+                print(f"🧹 Cleaned up {result.deleted_count} temp users from {collection_name}")
+        
+        except Exception as e:
+            print(f"❌ Error cleaning up temp users: {e}")
     
     async def add_message(self, user_id: int, message: str, role: str = "user") -> bool:
         """
@@ -311,6 +442,45 @@ class ChatHistoryManager:
             response: Bot response content
         """
         await self.add_message(user_id, response, "assistant")
+    
+    # BULK: Additional utility methods for temp users
+    async def get_bulk_stats(self) -> Dict:
+        """
+        Get statistics about bulk connections and temp users
+        
+        Returns:
+            Dictionary with bulk processing stats
+        """
+        try:
+            stats = {
+                "bulk_connections": len(self.bulk_connections),
+                "temp_collections": len(self.temp_user_collections),
+                "connection_names": list(self.bulk_connections.keys())
+            }
+            
+            # Count temp users in each collection
+            for collection_name, collection in self.temp_user_collections.items():
+                count = await collection.count_documents({"is_temp": True})
+                stats[f"temp_users_{collection_name}"] = count
+            
+            return stats
+            
+        except Exception as e:
+            print(f"❌ Error getting bulk stats: {e}")
+            return {}
+    
+    async def close_all_connections(self):
+        """Close all bulk MongoDB connections"""
+        try:
+            for connection_name, client in self.bulk_connections.items():
+                client.close()
+                print(f"🔌 Closed connection: {connection_name}")
+            
+            self.bulk_connections.clear()
+            self.temp_user_collections.clear()
+            
+        except Exception as e:
+            print(f"❌ Error closing connections: {e}")
 
 
 # Global instance
