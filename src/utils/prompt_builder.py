@@ -2,7 +2,7 @@ import json
 import os
 import random
 from typing import Dict, List, Any
-from .storage import chat_manager
+from .storage import temp_users_manager
 
 class PromptBuilder:
     def __init__(self):
@@ -107,10 +107,10 @@ class PromptBuilder:
             tuple: (message_added_safely, recent_history, last_user_message)
         """
         # Process message with storage system
-        message_added, recent_history = await chat_manager.process_user_message(user_id, message)
+        message_added, recent_history = await temp_users_manager.store_temp_user_chat(user_id, message)
         
         # Get last user message for consistency
-        last_user_message = await chat_manager.get_last_user_message(user_id)
+        last_user_message = await temp_users_manager.get_temp_user_chat(user_id)
         
         return message_added, recent_history, last_user_message
     
@@ -122,7 +122,7 @@ class PromptBuilder:
             user_id: Telegram user ID
             response: Bot response content
         """
-        await chat_manager.add_bot_response(user_id, response)
+        await temp_users_manager.store_temp_user_chat(user_id, response)
     
     def build_system_prompt(self, message: str, is_group: bool = False, user_context: Dict = None, recent_history: List = None) -> str:
         """Build dynamic system prompt based on context and chat history"""
