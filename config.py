@@ -10,3 +10,6 @@ BOT_TOKEN = getenv("BOT_TOKEN", "")
 OWNER_ID = int(getenv("OWNER_ID", "0"))
 
 MONGO_URL = getenv("MONGO_URL", "")
+
+# Chat History Management
+CHAT_HISTORY_DAYS = int(getenv("CHAT_HISTORY_DAYS", "2"))  # Default 2 days retention

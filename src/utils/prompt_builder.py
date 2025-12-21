@@ -2,6 +2,7 @@ import json
 import os
 import random
 from typing import Dict, List, Any
+from .storage import chat_manager
 
 class PromptBuilder:
     def __init__(self):
@@ -93,8 +94,38 @@ class PromptBuilder:
         
         return 'neutral'
     
-    def build_system_prompt(self, message: str, is_group: bool = False, user_context: Dict = None) -> str:
-        """Build dynamic system prompt based on context"""
+    # NEW: Chat History Integration Methods
+    async def process_user_message(self, user_id: int, message: str) -> tuple:
+        """
+        Process user message with chat history integration
+        
+        Args:
+            user_id: Telegram user ID
+            message: User message content
+        
+        Returns:
+            tuple: (message_added_safely, recent_history, last_user_message)
+        """
+        # Process message with storage system
+        message_added, recent_history = await chat_manager.process_user_message(user_id, message)
+        
+        # Get last user message for consistency
+        last_user_message = await chat_manager.get_last_user_message(user_id)
+        
+        return message_added, recent_history, last_user_message
+    
+    async def add_bot_response(self, user_id: int, response: str):
+        """
+        Add bot response to chat history
+        
+        Args:
+            user_id: Telegram user ID
+            response: Bot response content
+        """
+        await chat_manager.add_bot_response(user_id, response)
+    
+    def build_system_prompt(self, message: str, is_group: bool = False, user_context: Dict = None, recent_history: List = None) -> str:
+        """Build dynamic system prompt based on context and chat history"""
         
         # Get base persona
         identity = self.prompts['persona']['identity']
@@ -145,6 +176,14 @@ Max {word_limits['response_constraints']['max_words']} words, {word_limits['resp
 
 BOUNDARIES: {', '.join(boundaries['safety_rules']['hard_bans'][:3])}."""
 
+        # NEW: Add conversation consistency logic
+        if recent_history:
+            system_prompt += f"""
+
+CONVERSATION CONTEXT: Recent chat history available ({len(recent_history)} messages).
+Use this context to maintain conversation flow and avoid repetitive responses.
+Do NOT repeat same phrases like 'samjhi', 'theek hai', 'hehe' that user has seen before."""
+
         # Add special handling for different message types
         if msg_type == 'user_identity':
             system_prompt += """
@@ -169,7 +208,7 @@ CRITICAL RULES:
 - ABSOLUTELY NO topic jumping - stay on current conversation
 - Only answer what is asked - nothing more, nothing less"""
         
-        system_prompt += """
+        system_prompt += f"""
 
 Current mood matching: {mood_matching['response_matching'][f'user_{mood}']['energy_level'] if f'user_{mood}' in mood_matching['response_matching'] else 'neutral'}.
 
