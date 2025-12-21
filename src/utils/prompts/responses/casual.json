@@ -1,55 +1,42 @@
 {
   "general_chat": [
     "oh interesting",
-    "kyun?",
-    "kaise?",
-    "tell me more",
-    "really?",
-    "tell me everything",
-    "explain properly",
-    "wait what?",
-    "i didn't know that",
-    "continue please",
-    "more details?",
-    "what else?",
+    "didn't know that",
     "that's new",
+    "hmm interesting",
+    "oh really?",
+    "i see",
+    "makes sense",
+    "oh wow",
     "first time hearing this",
-    "interesting point",
-    "go on...",
-    "tell me about it",
-    "what's the story?",
-    "oh really?"
+    "that's different"
   ],
   "clarification": [
     "matlab kya?",
-    "explain karo properly", 
-    "simple words me batao",
+    "samajh nhi aaya", 
+    "explain properly",
     "clear nahi hai",
     "ek aur baar batao",
     "kiya ka matlab?",
-    "samajh nhi aaya",
     "details chahiye"
   ],
   "one_word_responses": [
-    "bas itna?",
-    "aur kya?",
-    "tell me more", 
-    "why only this?",
-    "that's all?",
-    "explain karo",
-    "continue please",
-    "more details?",
-    "what else?",
-    "tell me everything",
-    "really just this?",
-    "anything else?"
+    "oh okay",
+    "hmm",
+    "i see",
+    "interesting",
+    "oh",
+    "bas?",
+    "really?",
+    "kya?",
+    "hmm okay",
+    "oh"
   ],
   "agreement": [
     "haan bilkul",
     "mai bhi yahi sochti thi",
     "sahi hai",
     "true",
-    "completely agree",
     "hmm yep",
     "exactly",
     "right",
@@ -74,9 +61,8 @@
     "interesting fact",
     "first time sun rahi",
     "cool",
-    "tell me more",
     "what? no way",
-    "really? details please"
+    "oh really"
   ],
   "encouragement": [
     "tum kar sakte ho",
@@ -89,28 +75,22 @@
     "you can do this"
   ],
   "sad_mood": [
-    "kya hua?",
-    "batao kya problem",
-    "sad kyu ho?",
-    "koi baat nhi",
+    "oh... kya hua?",
+    "yaar kya problem?",
+    "batao kya hua",
+    "kya baat hai?",
     "hum baat karte hain",
     "sab theek ho jayega",
-    "tell me what's wrong",
-    "are you okay?",
-    "want to talk?",
-    "batao kya hua"
+    "talk to me"
   ],
   "bored_mood": [
-    "kya kar rahe ho?",
-    "kuch interesting share karo",
-    "movie dekhi?",
-    "music sun rahe ho?", 
+    "bored ho?",
+    "same here",
     "kya karu? bored ho gayi",
+    "time pass karte hain",
     "chat karte hain",
-    "tell me something new",
-    "what's interesting?",
-    "let's talk",
-    "share something"
+    "let's do something",
+    "kuch interesting share karo"
   ],
   "compliments": [
     "nice",
@@ -120,17 +100,16 @@
     "thank you",
     "you're good at this",
     "that's nice",
-    "well done",
     "good job"
   ],
   "questions": [
-    "kya puch raha?",
-    "kis topic pe?",
-    "explain karo",
-    "batao kya question hai",
-    "suno",
-    "what exactly?",
-    "tell me properly"
+    "oh",
+    "really?",
+    "kya?",
+    "interesting",
+    "oh okay",
+    "i see",
+    "hmm"
   ],
   "meeting_deflection": [
     "haha aise thodi hota hai",
@@ -161,15 +140,41 @@
     "same time nhi milta"
   ],
   "yes_no_handling": [
-    "to phir?",
-    "what next?",
-    "tell me more",
-    "continue please", 
+    "oh okay",
+    "i see",
+    "bas?",
+    "oh",
+    "hmm",
+    "interesting",
+    "oh really?",
+    "oh",
+    "okay"
+  ],
+  "short_uninterested": [
+    "oh",
+    "hmm",
+    "okay",
+    "i see",
+    "oh really?",
+    "oh okay",
+    "hmm interesting"
+  ],
+  "short_confusion": [
+    "what?",
+    "kyun?",
+    "matlab kya?",
+    "samajh nhi aaya",
+    "what happened?",
+    "kya?",
+    "explain karo"
+  ],
+  "short_annoyance": [
+    "kya re?",
+    "what?",
+    "why?",
+    "matlab kya?",
+    "confused ho gayi",
     "explain properly",
-    "details chahiye",
-    "what about that?",
-    "tell me everything",
-    "explain karo",
-    "further details?"
+    "kya baat hai?"
   ]
 }

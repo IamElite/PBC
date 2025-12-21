@@ -38,6 +38,18 @@ class PromptBuilder:
         if any(keyword in message_lower for keyword in user_identity_keywords):
             return 'user_identity'
         
+        short_uninterested = ['nhi', 'no', 'nahi', 'k', 'ok', 'thik']
+        if any(word in message_lower for word in short_uninterested) and len(message.split()) <= 2:
+            return 'short_uninterested'
+        
+        short_confusion = ['q', 'kyun', 'what', 'why', 'kya', 'kya re']
+        if any(word in message_lower for word in short_confusion) and len(message.split()) <= 2:
+            return 'short_confusion'
+        
+        short_annoyance = ['kya re', 'what', 'kyun', 'matlab kya', 'explain']
+        if any(word in message_lower for word in short_annoyance) and len(message.split()) <= 3:
+            return 'short_annoyance'
+        
         one_word_keywords = ['ok', 'hmm', 'acha', 'thik', 'han', 'yes', 'no', 'k', 'sahi', 'hn', 'nhi']
         if len(message.split()) <= 2 and any(word in message_lower for word in one_word_keywords):
             return 'dry_reply'
@@ -70,6 +82,18 @@ class PromptBuilder:
         low_energy_words = ['sad', 'bad', 'bekar', 'bura', 'upset', 'depressed', 'faltu', 'bakwas', 'boring', 'pakau', 'chup', 'irritating', 'ganda']
         if any(word in message_lower for word in low_energy_words):
             return 'negative'
+        
+        boredom_indicators = ['nhi', 'no', 'nahi', 'boring', 'chup', 'kuch nhi']
+        if any(word in message_lower for word in boredom_indicators) and len(message.split()) <= 3:
+            return 'short_low_energy'
+        
+        confusion_indicators = ['q', 'kyun', 'what', 'why', 'matlab kya', 'samajh nhi aaya']
+        if any(word in message_lower for word in confusion_indicators) and len(message.split()) <= 3:
+            return 'short_confusion'
+        
+        irritation_indicators = ['kya re', 'annoying', 'irritating', 'gussa', 'mad']
+        if any(word in message_lower for word in irritation_indicators) and len(message.split()) <= 3:
+            return 'short_irritation'
         
         if len(message.split()) <= 3:
             return 'dry'
@@ -142,7 +166,7 @@ class PromptBuilder:
         word_count = len(message.split())
         is_short_input = word_count <= 3
         
-        intent_guidance = self.get_response_intent(msg_type, mood, message)
+        intent_guidance = self.get_response_intent(msg_type, mood, message, recent_history)
         
         if is_group:
             context_behavior = self.prompts['context']['group_chat']
@@ -208,12 +232,20 @@ VARIATION REQUIREMENT:
 
 CRITICAL RULES:
 - Response must be a reaction statement ONLY
-- DO NOT ask questions (e.g., 'wbu?', 'kya kar rahe ho?')
-- DO NOT offer unsolicited advice/suggestions (e.g., songs, movies, music) unless explicitly asked
-- ABSOLUTELY NO topic jumping - stay on current conversation
-- Only answer what is asked - nothing more, nothing less"""
+- NO QUESTIONS unless user explicitly asks something
+- NO repetitive suggestions (khana, movie, song) spam
+- NO interrogation patterns like 'wbu?', 'kya kar rahe ho?', 'tell me more'
+- If user seems disengaged (short replies like 'nhi', 'q', 'kya re'): respond calmly without forcing conversation
+- Show natural understanding of user's emotional intent behind short messages
+- BEHAVIOR: Calm, understanding, slightly casual - never teacher/therapist tone"""
         
         system_prompt += f"""
+
+INTENT UNDERSTANDING FOR SHORT MESSAGES:
+- "nhi", "no", "nahi" = User uninterested/low energy → Respond calmly, don't push
+- "q", "what", "kyun" = User confused/irritated → Gentle clarification, no pressure
+- "kya re", "what", "why" = User annoyed → Acknowledge and deescalate naturally
+- "hmm", "ok", "thik" = User neutral/acknowledging → Calm response, no forced follow-up
 
 Current mood matching: {mood_matching['response_matching'][f'user_{mood}']['energy_level'] if f'user_{mood}' in mood_matching['response_matching'] else 'neutral'}.
 
@@ -228,10 +260,15 @@ MEMORY & CONTEXT FIRST:
 - Use this context to generate appropriate response
 
 RESPONSE INTENT GUIDELINES:
+- Uninterested user ("nhi", "no"): Calm acknowledgment, supportive presence, no pressure
+- Confused user ("q", "what"): Gentle clarification, helpful but not pushy
+- Annoyed user ("kya re"): Acknowledge, deescalate, stay calm
+- Neutral user ("hmm", "ok"): Calm response, no forced engagement
 - Name acknowledgment: Validate and remember, show familiarity
-- Short responses: Show curiosity, ask natural follow-ups
 - Rude behavior: Respond with calm confidence, redirect respectfully
-- Confused states: Ask for clarification without being repetitive
+
+TONE GUIDANCE: {intent_guidance.get('tone', 'natural and calm')}
+APPROACH: {intent_guidance.get('approach', 'respond naturally')}
 
 GIRL PERSONALITY TRAITS:
 - Confident, naturally playful, authentic reactions
@@ -248,7 +285,7 @@ HARD CONSTRAINTS:
         
         return system_prompt
     
-    def get_response_intent(self, msg_type: str, mood: str = None, user_message: str = None) -> Dict[str, str]:
+    def get_response_intent(self, msg_type: str, mood: str = None, user_message: str = None, recent_history: List = None) -> Dict[str, str]:
         intent_guidance = {
             'msg_type': msg_type,
             'mood': mood,
@@ -256,31 +293,66 @@ HARD CONSTRAINTS:
             'thinking_process': 'analyze_context_and_generate_original_response'
         }
         
-        if msg_type == 'dry_reply':
-            user_lower = (user_message or '').lower()
+        user_lower = (user_message or '').lower()
+        
+        if msg_type == 'short_uninterested':
+            intent_guidance['intent'] = 'acknowledge_and_present_supportive_presence'
+            intent_guidance['approach'] = 'user seems uninterested, respond with calm acknowledgment and be present without forcing conversation'
+            intent_guidance['tone'] = 'calm, understanding, slightly low energy'
+        elif msg_type == 'short_confusion':
+            intent_guidance['intent'] = 'provide_clarification_naturally'
+            intent_guidance['approach'] = 'user seems confused, provide gentle clarification without being pushy'
+            intent_guidance['tone'] = 'helpful, slightly concerned'
+        elif msg_type == 'short_annoyance':
+            intent_guidance['intent'] = 'acknowledge_and_deescalate'
+            intent_guidance['approach'] = 'user seems annoyed, acknowledge and deescalate naturally'
+            intent_guidance['tone'] = 'calm, understanding'
+        elif msg_type == 'dry_reply':
             if any(word in user_lower for word in ['yes', 'haan', 'han', 'hn']):
-                intent_guidance['intent'] = 'show_curiosity_and_ask_follow_up'
-                intent_guidance['approach'] = 'acknowledge agreement and request more details naturally'
+                intent_guidance['intent'] = 'acknowledge_with_gentle_curiosity'
+                intent_guidance['approach'] = 'acknowledge agreement with gentle interest, ask soft follow-up only if context allows'
+                intent_guidance['tone'] = 'warm, slightly curious'
             elif any(word in user_lower for word in ['no', 'nahi', 'nhi']):
-                intent_guidance['intent'] = 'show_interest_and_seek_explanation'
-                intent_guidance['approach'] = 'acknowledge disagreement and ask for reasons naturally'
+                intent_guidance['intent'] = 'acknowledge_without_pressure'
+                intent_guidance['approach'] = 'acknowledge disagreement calmly, do not push for explanations'
+                intent_guidance['tone'] = 'understanding, calm'
             elif any(word in user_lower for word in ['hmm', 'ok', 'thik', 'acha']):
-                intent_guidance['intent'] = 'encourage_elaboration'
-                intent_guidance['approach'] = 'show engagement and ask for more information naturally'
+                intent_guidance['intent'] = 'acknowledge_neutrally'
+                intent_guidance['approach'] = 'neutral acknowledgment, do not force follow-up questions'
+                intent_guidance['tone'] = 'calm, neutral'
             else:
-                intent_guidance['intent'] = 'maintain_conversation_flow'
-                intent_guidance['approach'] = 'respond naturally and keep conversation going'
+                intent_guidance['intent'] = 'maintain_gentle_presence'
+                intent_guidance['approach'] = 'maintain conversation with gentle presence, no forced engagement'
+                intent_guidance['tone'] = 'calm, supportive'
         elif mood == 'negative':
             intent_guidance['intent'] = 'show_concern_and_support'
             intent_guidance['approach'] = 'respond with natural concern and offer listening ear'
+            intent_guidance['tone'] = 'concerned, supportive'
         elif mood == 'excited':
             intent_guidance['intent'] = 'match_energy_enthusiastically'
             intent_guidance['approach'] = 'respond with matching enthusiasm and curiosity'
+            intent_guidance['tone'] = 'enthusiastic, curious'
         else:
             intent_guidance['intent'] = 'engage_naturally'
             intent_guidance['approach'] = 'respond based on actual message content with natural interest'
+            intent_guidance['tone'] = 'natural, interested'
         
         return intent_guidance
+    
+    def detect_disengagement(self, recent_history: List = None) -> bool:
+        if not recent_history or len(recent_history) < 4:
+            return False
+        
+        recent_messages = recent_history[-4:]
+        disengagement_count = 0
+        
+        for msg in recent_messages:
+            if isinstance(msg, dict) and msg.get('message'):
+                message = msg['message'].lower()
+                if any(word in message for word in ['nhi', 'no', 'nahi', 'k', 'ok', 'hmm']) and len(message.split()) <= 2:
+                    disengagement_count += 1
+        
+        return disengagement_count >= 2
     
     def validate_response(self, response: str, msg_type: str) -> str:
         word_limits = self.prompts['config']['word_limits']

@@ -3,21 +3,14 @@
     "oh... kya hua?",
     "yaar kya problem?",
     "batao kya hua",
-    "sad kyu ho?",
-    "tell me what's wrong",
-    "what happened?",
-    "everything okay?",
-    "are you alright?",
     "kya baat hai?",
+    "hum baat karte hain",
+    "sab theek ho jayega",
     "talk to me"
   ],
   "depressed_mood": [
     "oh... you okay?",
     "yaar seem sad",
-    "what's bothering you?",
-    "want to talk about it?",
-    "everything fine?",
-    "are you feeling okay?",
     "kya hua yaar?",
     "seems like you're down",
     "talk to me properly",
@@ -25,25 +18,20 @@
   ],
   "bored_mood": [
     "bored ho?",
-    "kya kar rahe ho?",
-    "tell me something interesting",
-    "kya plan hai?",
-    "movie dekhi?",
-    "music sun rahe ho?",
-    "kuch new share karo",
-    "what's going on?",
-    "let's talk",
-    "share something"
+    "same here",
+    "kya karu? bored ho gayi",
+    "time pass karte hain",
+    "chat karte hain",
+    "let's do something",
+    "kuch interesting share karo"
   ],
   "angry_mood": [
     "yaar gussa kyun?",
     "what happened?",
     "kya hua?",
     "you seem upset",
-    "tell me what's wrong",
     "kya problem hai?",
     "everything okay?",
-    "are you alright?",
     "batao kya hua",
     "talk to me"
   ],
@@ -56,8 +44,7 @@
     "kiya ka matlab?",
     "simple words me batao",
     "not getting it",
-    "clarify karo",
-    "details chahiye"
+    "clarify karo"
   ],
   "lonely_mood": [
     "alone feel kar rahe ho?",
@@ -68,8 +55,7 @@
     "talk to me",
     "kya soch rahe ho?",
     "share something",
-    "hum baat karte hain",
-    "tell me everything"
+    "hum baat karte hain"
   ],
   "happy_mood": [
     "wow! kya hua?",
@@ -79,7 +65,6 @@
     "yaar that's great!",
     "share the details",
     "what happened?",
-    "tell me more",
     "that's amazing!",
     "happy for you!"
   ],
@@ -90,9 +75,35 @@
     "share all details",
     "yaar sounds great!",
     "what happened?",
-    "tell me more",
     "that's amazing!",
     "excited for you!",
     "explain properly"
+  ],
+  "short_low_energy": [
+    "oh",
+    "hmm",
+    "okay",
+    "i see",
+    "oh really?",
+    "oh okay",
+    "hmm interesting"
+  ],
+  "short_irritation": [
+    "what?",
+    "kyun?",
+    "matlab kya?",
+    "samajh nhi aaya",
+    "what happened?",
+    "kya?",
+    "explain karo"
+  ],
+  "short_annoyance": [
+    "kya re?",
+    "what?",
+    "why?",
+    "matlab kya?",
+    "confused ho gayi",
+    "explain properly",
+    "kya baat hai?"
   ]
 }
